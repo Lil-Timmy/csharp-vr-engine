@@ -1,0 +1,24 @@
+<Project>
+
+  <Target Name="Assets" BeforeTargets="Build;Publish" AfterTargets="Publish">
+
+    <!-- Define paths. -->
+    <PropertyGroup>
+      <SourceDir>$(MSBuildProjectDirectory)/assets/</SourceDir>
+      <OutputDir>$(OutDir)/assets/</OutputDir>
+    </PropertyGroup>
+    <!-- Define files to copy. -->
+    <ItemGroup>
+      <Assets       Include="$(SourceDir)**/*" />
+    </ItemGroup>
+
+    <!-- Remove and recreate output folder. -->
+    <RemoveDir Directories="$(OutputDir)" />
+    <MakeDir Directories="$(OutputDir)" />
+
+    <!-- Copy over the files. -->
+    <Copy SourceFiles="@(Assets)" DestinationFiles="@(Assets->'$(OutputDir)%(RecursiveDir)%(Filename)%(Extension)')" />
+    
+  </Target>
+
+</Project>
