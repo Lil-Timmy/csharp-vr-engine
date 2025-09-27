@@ -261,7 +261,10 @@ public unsafe class XRInputs
             }
         }
 
-        inputPoses[Input.HEADPOSE] = new XRPose(_views[0].pose);
+        XRPose _eyeA = new XRPose(_views[0].pose);
+        XRPose _eyeB = new XRPose(_views[1].pose);
+        
+        inputPoses[Input.HEADPOSE] = new XRPose((_eyeA.position + _eyeB.position) * 0.5f, quat.Slerp(_eyeA.rotation, _eyeB.rotation, 0.5f));
 
         fixed (XrInteractionProfileState* _rightInteractionProfileStatePtr = &rightInteractionProfileState)
         fixed (XrInteractionProfileState* _leftInteractionProfileStatePtr  = &leftInteractionProfileState )

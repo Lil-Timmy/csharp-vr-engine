@@ -64,7 +64,7 @@
     <OpenGLProfile>CORE</OpenGLProfile>
     
     <OpenGLVersionMajor>4</OpenGLVersionMajor>
-    <OpenGLVersionMinor>3</OpenGLVersionMinor>
+    <OpenGLVersionMinor>5</OpenGLVersionMinor>
     
     <OpenGLWrapperAPI>SAFE</OpenGLWrapperAPI>
     

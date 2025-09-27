@@ -9,7 +9,7 @@ public unsafe class Framebuffer : Disposable
     public readonly uint    handle;
     
     public readonly Texture texture;
-    public          ivec2   size => texture.size;
+    public          ivec2   size;
     
     
     public Framebuffer(Texture _texture)

@@ -9,38 +9,9 @@ public unsafe class Shader : Disposable
 {
     public  readonly uint handle;
     
-    private readonly uint vertexArray;
     private readonly Dictionary<string, int> uniforms = new Dictionary<string, int>();
     
     
-    public Shader(string _compCode)
-    {
-        handle = glCreateProgram();
-        
-        uint _comp = glCreateShader(GL_COMPUTE_SHADER);
-        
-        glShaderSource (_comp, _compCode);
-        
-
-        int[] _status = new int[1];
-        glCompileShader(_comp);
-        glGetShaderiv  (_comp, GL_COMPILE_STATUS, ref _status);
-        if (_status[0] == 0)
-        {
-            Debug.Error($"Compute shader compilation failed:\n{glGetShaderInfoLog(_comp, 256)}");
-        }
-        
-        glAttachShader(handle, _comp);
-        glLinkProgram(handle);
-        
-        glGetProgramiv(handle, GL_LINK_STATUS, ref _status);
-        if (_status[0] == 0) Debug.Error($"Program linking failed:\n{glGetProgramInfoLog(handle, 256)}");
-        
-        glDetachShader(handle, _comp);
-        glDeleteShader(        _comp);
-        
-        Bind();
-    }
     public Shader(string _vertCode, string _fragCode)
     {
         handle = glCreateProgram();
@@ -78,34 +49,15 @@ public unsafe class Shader : Disposable
         glDeleteShader(        _vert);
         glDeleteShader(        _frag);
         
-        vertexArray = glGenVertexArray();
-        
         Bind();
     }
     protected override void OnDispose()
     {
-        glDeleteProgram     (handle     );
-        glDeleteVertexArrays(vertexArray);
+        glDeleteProgram(handle);
     }
     public void Bind()
     {
-        glUseProgram     (handle     );
-        if (vertexArray != 0) glBindVertexArray(vertexArray);
-    }
-    
-    public void Vertex(string _name, int _elementSize, int _stride, uint _offset, bool _perInstance)
-    {
-        Bind();
-        
-        uint _location = (uint)glGetAttribLocation(handle, _name);
-        glEnableVertexAttribArray(_location);
-        glVertexAttribPointer    (_location, _elementSize, GL_FLOAT, false, sizeof(float) * _stride, sizeof(float) * _offset);
-        glVertexAttribDivisor    (_location, _perInstance ? 1u : 0u);
-    }
-    public void Buffer<T>(Buffer<T> _buffer, uint _index) where T : unmanaged
-    {
-        Bind();
-        glBindBufferBase((int)_buffer.target, _index, _buffer.handle);
+        glUseProgram(handle);
     }
     
     public void Uniform(string _name, float _value) => glUniform1f (UniformLocation(_name), _value);

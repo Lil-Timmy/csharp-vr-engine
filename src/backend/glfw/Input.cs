@@ -13,6 +13,8 @@ public static class Input
     
     public static ivec2 mousePosition { get; private set; }
     
+    private static XRInputs xrInputs;
+    
 
     ///<summary>Creates and initializes GLFW's input system for input-action callbacks.</summary>///
     public static void Initialize()
@@ -67,8 +69,16 @@ public static class Input
             mousePosition = new ivec2((int)_x - Window.size.x / 2, Window.size.y / 2 - (int)_y);
             down.Add(Key.MouseMove);
         });
+        
+        
+        xrInputs = new XRInputs(OpenXR.instance, OpenXR.session);
     }
     
+    
+    private static void OnEarlyUpdate()
+    {
+        xrInputs.UpdateActions(OpenXR.instance, OpenXR.session, OpenXR.space, OpenXR.views, OpenXR.nextDisplayTime);
+    }
     
     private static void OnLateUpdate()
     {
@@ -80,6 +90,33 @@ public static class Input
     public static bool Down(Key _key) => down.Contains(_key);
     public static bool Held(Key _key) => held.Contains(_key);
     public static bool Up  (Key _key) => up  .Contains(_key);
+    
+    
+    public static vec3  headsetPosition           => xrInputs.headsetPosition;
+    public static quat  headsetRotation           => xrInputs.headsetRotation;
+
+    public static bool  rightControllerActive     => xrInputs.rightControllerActive;
+    public static bool  leftControllerActive      => xrInputs.leftControllerActive;
+    
+    public static vec3  rightControllerPosition   => xrInputs.rightControllerPosition;
+    public static quat  rightControllerRotation   => xrInputs.rightControllerRotation;
+    public static bool  rightControllerMenu       => xrInputs.rightControllerMenu;
+    public static bool  rightControllerPrimary    => xrInputs.rightControllerPrimary;
+    public static bool  rightControllerSecondary  => xrInputs.rightControllerSecondary;
+    public static float rightControllerGrip       => xrInputs.rightControllerGrip;
+    public static float rightControllerTrigger    => xrInputs.rightControllerTrigger;
+    public static vec2  rightControllerJoystick   => xrInputs.rightControllerJoystick;
+
+    public static vec3  leftControllerPosition    => xrInputs.leftControllerPosition;
+    public static quat  leftControllerRotation    => xrInputs.leftControllerRotation;
+    public static bool  leftControllerMenu        => xrInputs.leftControllerMenu;
+    public static bool  leftControllerPrimary     => xrInputs.leftControllerPrimary;
+    public static bool  leftControllerSecondary   => xrInputs.leftControllerSecondary;
+    public static float leftControllerGrip        => xrInputs.leftControllerGrip;
+    public static float leftControllerTrigger     => xrInputs.leftControllerTrigger;
+    public static vec2  leftControllerJoystick    => xrInputs.leftControllerJoystick;
+
+    
     
     
     public enum Key

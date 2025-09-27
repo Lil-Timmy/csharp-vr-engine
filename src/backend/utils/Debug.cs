@@ -104,8 +104,6 @@ public static class Debug
     ///<summary>Prints out a specified message if an OpenXR command fails.</summary>///
     public static void Result(XrResult _result, string _message)
     {
-        Debug.Log($"Call: {_message}");
-        
         if (_result < 0)
         {
             Error($"OpenXR - {_message} - {_result}");

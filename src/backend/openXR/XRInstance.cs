@@ -79,8 +79,8 @@ public unsafe class XRInstance : Disposable
 
         fixed (XrApplicationInfo* _applicationInfoPtr = &applicationInfo)
         {
-            Program.StringToBuffer(appName   , _applicationInfoPtr -> applicationName, 128);
-            Program.StringToBuffer(engineName, _applicationInfoPtr -> engineName     , 128);
+            OpenXR.StringToBuffer(appName   , _applicationInfoPtr -> applicationName, 128);
+            OpenXR.StringToBuffer(engineName, _applicationInfoPtr -> engineName     , 128);
         }
         
         

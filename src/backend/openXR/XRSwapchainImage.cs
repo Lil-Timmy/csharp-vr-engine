@@ -6,19 +6,11 @@ namespace Engine;
 
 public unsafe class XRSwapchainImage
 {
-    public readonly TextureArray     texture;
-    public readonly FramebufferArray framebuffer;
+    public readonly uint handle;
 
 
-    public XRSwapchainImage(TextureArray _texture)
+    public XRSwapchainImage(uint _image)
     {
-        texture = _texture;
-        framebuffer = new FramebufferArray(_texture);
-    }
-
-
-    public void Begin()
-    {
-        framebuffer.Bind();
+        handle = _image;
     }
 }

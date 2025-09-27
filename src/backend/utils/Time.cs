@@ -12,7 +12,7 @@ public static class Time
     private static readonly Timer timer = new Timer();
     
     
-    private static void OnLoad()
+    private static void OnBegin()
     {
         time = timer.time;
     }

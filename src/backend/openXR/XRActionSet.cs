@@ -30,8 +30,8 @@ public unsafe class XRActionSet : Disposable
         fixed (byte* _actionSetNamePtr          = actionSetCreateInfo.actionSetName         )
         fixed (byte* _localizedActionSetNamePtr = actionSetCreateInfo.localizedActionSetName)
         {
-            Program.StringToBuffer(internalName, _actionSetNamePtr         , 64 );
-            Program.StringToBuffer(localName   , _localizedActionSetNamePtr, 128);
+            OpenXR.StringToBuffer(internalName, _actionSetNamePtr         , 64 );
+            OpenXR.StringToBuffer(localName   , _localizedActionSetNamePtr, 128);
         }
 
 

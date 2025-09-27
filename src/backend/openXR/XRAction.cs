@@ -42,8 +42,8 @@ public unsafe class XRAction : Disposable
         fixed (byte* _actionNamePtr          = actionCreateInfo.actionName         )
         fixed (byte* _localizedActionNamePtr = actionCreateInfo.localizedActionName)
         {
-            Program.StringToBuffer(input.name, _actionNamePtr         , 64 );
-            Program.StringToBuffer(input.name, _localizedActionNamePtr, 128);
+            OpenXR.StringToBuffer(input.name, _actionNamePtr         , 64 );
+            OpenXR.StringToBuffer(input.name, _localizedActionNamePtr, 128);
         }
 
 

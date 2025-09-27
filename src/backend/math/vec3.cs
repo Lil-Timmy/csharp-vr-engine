@@ -199,12 +199,15 @@ public struct vec3
 
 
     #region CONVERSION
-    public static implicit operator System.Numerics.Vector3       (vec3                           _vec ) => new System.Numerics.Vector3       (_vec.x, _vec.y, _vec.z);
-    public static implicit operator vec3                          (System.Numerics.Vector3        _vec ) => new vec3                          (_vec.X, _vec.Y, _vec.Z);
+    public static implicit operator System.Numerics.Vector3       (vec3                    _vec ) => new System.Numerics.Vector3       (_vec.x, _vec.y, _vec.z);
+    public static implicit operator vec3                          (System.Numerics.Vector3 _vec ) => new vec3                          (_vec.X, _vec.Y, _vec.Z);
     
-    public static implicit operator vec3                          (ivec3                          _vec ) => new vec3                          (_vec.x, _vec.y, _vec.z);
+    public static implicit operator XrVector3f                    (vec3                    _vec ) => new XrVector3f       { x = _vec.x, y = _vec.y, z = _vec.z };
+    public static implicit operator vec3                          (XrVector3f              _vec ) => new vec3             (     _vec.x,     _vec.y,     _vec.z );
     
-    public static implicit operator vec3                          (quat                           _quat) => new vec3
+    public static implicit operator vec3                          (ivec3                   _vec ) => new vec3                          (_vec.x, _vec.y, _vec.z);
+    
+    public static implicit operator vec3                          (quat                    _quat) => new vec3
     (
         MathF.Atan2(2.0f * (_quat.w * _quat.x + _quat.y * _quat.z), 1.0f - 2.0f * (_quat.x * _quat.x + _quat.y * _quat.y)), // Pitch - X
         MathF.Atan2(2.0f * (_quat.w * _quat.y - _quat.x * _quat.z), 1.0f - 2.0f * (_quat.y * _quat.y + _quat.z * _quat.z)), // Yaw   - Y

@@ -14,7 +14,7 @@ public unsafe class XRSwapchain : Disposable
     public           uint             width                     { get; private set; }
     public           uint             height                    { get; private set; }
     
-    public           XrView[]         activeViews               { get; private set; }
+    public readonly  XrView[]         activeViews;
     public           XRSwapchainImage activeSwapchainImage      { get; private set; }
     public           uint             activeSwapchainImageIndex { get; private set; }
 
@@ -124,7 +124,7 @@ public unsafe class XRSwapchain : Disposable
 
         for (int _i = 0; _i < imageCount; _i++)
         {
-            images[_i] = new XRSwapchainImage(new TextureArray(imagesKhr[_i].image, new ivec3((int)width, (int)height, (int)viewCount)));
+            images[_i] = new XRSwapchainImage(imagesKhr[_i].image);
         }
 
 
@@ -262,21 +262,7 @@ public unsafe class XRSwapchain : Disposable
 
         if (frameState.shouldRender == 0)
         {
-            fixed (XrFrameBeginInfo* _frameBeginInfoPtr = &frameBeginInfo)
-            {
-                TimmyXR.xrBeginFrame(_xrSession.session, _frameBeginInfoPtr);
-            }
-
-            frameEndInfo.layerCount  = 0                              ;
-            frameEndInfo.layers      = null                           ;
-            
-            frameEndInfo.displayTime = frameState.predictedDisplayTime;
-
-
-            fixed(XrFrameEndInfo* _frameEndInfoPtr = &frameEndInfo)
-            {
-                TimmyXR.xrEndFrame(_xrSession.session, _frameEndInfoPtr);
-            }
+            Delay(_xrSession);
             
             _views = null;
             _predictedDisplayTime = 0;
@@ -289,7 +275,7 @@ public unsafe class XRSwapchain : Disposable
 
         fixed (XrViewLocateInfo* _viewLocateInfoPtr = &viewLocateInfo)
         fixed (XrViewState     * _viewState         = &viewState     )
-        fixed (uint          * _viewCountPtr      = &viewCount     )
+        fixed (uint            * _viewCountPtr      = &viewCount     )
         fixed (XrView          * _viewsPtr          =  activeViews   )
         {
             TimmyXR.xrLocateViews(_xrSession.session, _viewLocateInfoPtr, _viewState, viewCount, _viewCountPtr, _viewsPtr);
@@ -316,11 +302,9 @@ public unsafe class XRSwapchain : Disposable
             TimmyXR.xrAcquireSwapchainImage(swapchain, _swapchainImageAcquireInfoPtr, &_activeSwapchainIndex);
             TimmyXR.xrWaitSwapchainImage   (swapchain, _swapchainImageWaitInfoPtr                           );
         }
-
+        
         activeSwapchainImageIndex = _activeSwapchainIndex;
         activeSwapchainImage      = images[activeSwapchainImageIndex];
-
-        activeSwapchainImage.Begin();
     }
 
     public void End(XRSession _xrSession)
@@ -356,44 +340,24 @@ public unsafe class XRSwapchain : Disposable
     }
 
 
-    public static void Wait(XRSession _session)
+    public void Delay(XRSession _xrSession)
     {
-        XrFrameState _frameState = new XrFrameState()
+        fixed (XrFrameBeginInfo* _frameBeginInfoPtr = &frameBeginInfo)
         {
-            type = XrStructureType.XR_TYPE_FRAME_STATE,
-            next = null,
-        };
+            TimmyXR.xrBeginFrame(_xrSession.session, _frameBeginInfoPtr);
+        }
         
-        XrFrameWaitInfo _frameWaitInfo = new XrFrameWaitInfo()
-        {
-            type = XrStructureType.XR_TYPE_FRAME_WAIT_INFO,
-            next = null,
-        };
         
-        TimmyXR.xrWaitFrame(_session.session, &_frameWaitInfo, &_frameState);
+        frameEndInfo.layerCount  = 0                              ;
+        frameEndInfo.layers      = null                           ;
+        
+        frameEndInfo.displayTime = frameState.predictedDisplayTime;
 
-        XrFrameBeginInfo _frameBeginInfo = new XrFrameBeginInfo()
+
+        fixed(XrFrameEndInfo* _frameEndInfoPtr = &frameEndInfo)
         {
-            type = XrStructureType.XR_TYPE_FRAME_BEGIN_INFO,
-            next = null,
-        };
-        
-        TimmyXR.xrBeginFrame(_session.session, &_frameBeginInfo);
-        
-        
-        XrFrameEndInfo _frameEndInfo = new XrFrameEndInfo()
-        {
-            type = XrStructureType.XR_TYPE_FRAME_END_INFO,
-            next = null,
-            
-            layerCount = 0,
-            layers     = null,
-            
-            displayTime          = _frameState.predictedDisplayTime,
-            environmentBlendMode = XrEnvironmentBlendMode.XR_ENVIRONMENT_BLEND_MODE_OPAQUE,
-        };
-        
-        TimmyXR.xrEndFrame(_session.session, &_frameEndInfo);
+            TimmyXR.xrEndFrame(_xrSession.session, _frameEndInfoPtr);
+        }
     }
 
 
