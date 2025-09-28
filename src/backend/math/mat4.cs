@@ -141,26 +141,38 @@ public struct mat4
         return _mat;
     }
 
-    public static mat4 ProjectionFromFov(XrFovf fov, float near, float far)
+    public static mat4 Projection(XRView _view, float near, float far)
     {
-        // Compute tangents
-        float tanLeft   = Maths.Tan(fov.angleLeft);
-        float tanRight  = Maths.Tan(fov.angleRight);
-        float tanDown   = Maths.Tan(fov.angleDown);
-        float tanUp     = Maths.Tan(fov.angleUp);
+        float _left   = Maths.Tan(_view.angleLeft);
+        float _right  = Maths.Tan(_view.angleRight);
+        float _down   = Maths.Tan(_view.angleDown);
+        float _up     = Maths.Tan(_view.angleUp);
 
-        float tanWidth  = tanRight - tanLeft;
-        float tanHeight = tanUp - tanDown;
+        float _width  = _right - _left;
+        float _height = _up    - _down;
 
         mat4 mat = new mat4
-        {
-            x = new vec4(2f / tanWidth, 0f, 0f, 0f),
-            y = new vec4(0f, 2f / tanHeight, 0f, 0f),
-            z = new vec4((tanRight + tanLeft) / tanWidth, (tanUp + tanDown) / tanHeight, -(far + near) / (far - near), -1f),
-            w = new vec4(0f, 0f, -2f * far * near / (far - near), 0f)
-        };
+        (
+            2f               / _width, 0f                     ,  0f                            ,  0f,
+            0f                       , 2f            / _height,  0f                            ,  0f,
+            (_right + _left) / _width, (_up + _down) / _height, -(far + near)    / (far - near), -1f,
+            0f                       , 0f                     , -2f * far * near / (far - near),  0f
+        );
 
         return mat;
+    }
+    
+    public static mat4 Projection(float _fov, float aspect, float near, float far)
+    {
+        float _invFov = 1f / (float)Maths.Tan(_fov * 0.5f);
+
+        return new mat4
+        (
+            _invFov / aspect, 0f     , 0f                             ,  0f,
+            0f              , _invFov, 0f                             ,  0f,
+            0f              , 0f     , -(far + near) / (far - near)   , -1f,
+            0f              , 0f     , -2f * far * near / (far - near),  0f
+        );
     }
 
     #endregion

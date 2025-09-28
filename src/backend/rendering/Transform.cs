@@ -4,43 +4,44 @@
 namespace Engine;
 
 
-public class Transform
+public class Transform : Entity
 {
-    public vec3 position { get { return parent.position + localPosition_; } set { localPosition_ = value - parent.position; } }
-    public quat rotation { get { return parent.rotation * localRotation_; } set { localRotation_ = value / parent.rotation; } }
-    public vec3 scale    { get { return parent.scale    * localScale_   ; } set { localScale_    = value / parent.scale   ; } }
-    
-    public vec3 localPosition { get { return localPosition_; } set { localPosition_ = value; } }
-    public quat localRotation { get { return localRotation_; } set { localRotation_ = value; } }
-    public vec3 localScale    { get { return localScale_   ; } set { localScale_    = value; } }
-    
-    private vec3 localPosition_;
-    private quat localRotation_;
-    private vec3 localScale_;
-    
-    public readonly Mesh mesh;
-    
-    private readonly Transform      parent;
-    private readonly List<Transform> children;
-    
-    
-    public Transform(Transform _parentTransform, Mesh _mesh, vec3 _position, quat _rotation, vec3 _scale)
-    {
-        parent   = _parentTransform;
-        children = new List<Transform>();
-        
-        mesh     = _mesh;
-        
-        position = _position;
-        rotation = _rotation;
-        scale    = _scale;
+    public Transform parent
+    { 
+        get
+        {
+            return parent_;
+        }
+        set
+        {
+            parent_?.children.Remove(this);
+            value  ?.children.Add   (this);
+            
+            parent_ = value ?? sceneTransform;
+        }
     }
-    public Transform(Mesh _mesh, vec3 _position, quat _rotation, vec3 _scale)
+    public readonly List<Transform> children = new List<Transform>();
+    
+    public vec3 position { get { return parent_ == null ? localPosition : parent.position + localPosition; } set { localPosition = value - parent.position; } }
+    public quat rotation { get { return parent_ == null ? localRotation : parent.rotation * localRotation; } set { localRotation = value / parent.rotation; } }
+    public vec3 scale    { get { return parent_ == null ? localScale    : parent.scale    * localScale   ; } set { localScale    = value / parent.scale   ; } }
+    
+    public vec3 localPosition;
+    public quat localRotation;
+    public vec3 localScale;
+    
+    public mat4 positionMatrix => mat4.Position(position);
+    public mat4 rotationMatrix => mat4.Rotation(rotation);
+    public mat4 scaleMatrix    => mat4.Scale   (scale   );
+    
+    private Transform parent_;
+    
+    private static readonly Transform sceneTransform = new Transform();
+    
+    
+    public Transform(Transform _parent, vec3 _position, quat _rotation, vec3 _scale)
     {
-        parent   = globalTransform;
-        children = new List<Transform>();
-        
-        mesh = _mesh;
+        parent   = _parent;
         
         position = _position;
         rotation = _rotation;
@@ -49,34 +50,10 @@ public class Transform
     
     private Transform()
     {
-        parent = null;
-        children = new List<Transform>();
+        parent_ = null;
         
-        position = vec3.ZERO;
-        rotation = quat.IDENTITY;
-        scale    = vec3.ONE;
-    }
-    
-    
-    
-    private static readonly Transform globalTransform = new Transform();
-    
-    
-    // private static void OnRender()
-    // {
-    //     RenderChildren(globalTransform);
-    // }
-    
-    private static void RenderChildren(Transform _parent)
-    {
-        foreach(Transform _transform in _parent.children)
-        {
-            if (_transform.mesh != null)
-            {
-                Debug.Log("Render");
-            }
-            
-            RenderChildren(_transform);
-        }
+        localPosition = vec3.ZERO;
+        localRotation = quat.IDENTITY;
+        localScale    = vec3.ONE;
     }
 }

@@ -7,7 +7,7 @@ namespace Engine;
 public unsafe class XRSwapchain : Disposable
 {
     public  readonly XrSwapchain                 swapchain;
-    public  readonly XRSwapchainImage[]          images   ;
+    public  readonly XRSwapchainImage[]          images;
 
     private readonly XrSwapchainImageOpenGLKHR[] imagesKhr;
     
@@ -234,7 +234,7 @@ public unsafe class XRSwapchain : Disposable
             activeViews[_i] = new XrView()
             {
                 type = XrStructureType.XR_TYPE_VIEW,
-                next = null              ,
+                next = null                        ,
             };
         }
         
@@ -242,7 +242,7 @@ public unsafe class XRSwapchain : Disposable
         swapchainImageReleaseInfo = new XrSwapchainImageReleaseInfo()
         {
             type = XrStructureType.XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO,
-            next = null,
+            next = null                                                ,
         };
     }
 
@@ -252,7 +252,7 @@ public unsafe class XRSwapchain : Disposable
     }
 
 
-    public bool Wait(XRSession _xrSession, XRSpace _xrSpace, out XrView[] _views, out long _predictedDisplayTime)
+    public bool Wait(XRSession _xrSession, XRSpace _xrSpace, out XRView[] _views, out long _predictedDisplayTime)
     {
         fixed (XrFrameWaitInfo* _frameWaitInfoPtr = &frameWaitInfo)
         fixed (XrFrameState   * _frameStatePtr    = &frameState   )
@@ -282,7 +282,7 @@ public unsafe class XRSwapchain : Disposable
             TimmyXR.xrLocateViews(_xrSession.session, _viewLocateInfoPtr, _viewState, viewCount, _viewCountPtr, _viewsPtr);
         }
 
-        _views = activeViews;
+        _views = [new XRView(activeViews[0]), new XRView(activeViews[1])];
         _predictedDisplayTime = frameState.predictedDisplayTime;
 
         return true;

@@ -251,7 +251,7 @@ public unsafe class XRInputs
 
 
 
-    public void UpdateActions(XRInstance _xrInstance, XRSession _xrSession, XRSpace _xrSpace, XrView[] _views, long _predictedDisplayTime)
+    public void UpdateActions(XRInstance _xrInstance, XRSession _xrSession, XRSpace _xrSpace, XRView[] _views, long _predictedDisplayTime)
     {
         fixed (XrActionsSyncInfo* _actionsSyncInfoPtr = &actionsSyncInfo)
         {
@@ -261,8 +261,8 @@ public unsafe class XRInputs
             }
         }
 
-        XRPose _eyeA = new XRPose(_views[0].pose);
-        XRPose _eyeB = new XRPose(_views[1].pose);
+        XRView _eyeA = _views[0];
+        XRView _eyeB = _views[1];
         
         inputPoses[Input.HEADPOSE] = new XRPose((_eyeA.position + _eyeB.position) * 0.5f, quat.Slerp(_eyeA.rotation, _eyeB.rotation, 0.5f));
 

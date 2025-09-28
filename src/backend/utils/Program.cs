@@ -10,7 +10,7 @@ public static class Program
     public static bool isActive = true;
     
     
-    private static readonly List<string> initCallbacks  = ["OnBegin"       , "OnStart"                                                             ];
+    private static readonly List<string> initCallbacks  = ["OnBegin"       , "OnStart"                                                            ];
     private static readonly List<string> frameCallbacks = ["OnBeginUpdate", "OnEarlyUpdate", "OnUpdate", "OnLateUpdate", "OnRender", "OnEndUpdate"];
     private static readonly List<string> exitCallbacks  = ["OnQuit"       , "OnEnd"                                                               ];
     

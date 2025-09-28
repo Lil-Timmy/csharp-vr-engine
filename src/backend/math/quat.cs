@@ -337,7 +337,7 @@ public struct quat
         
         float _initialSine = (float)Maths.Sin(_initialAngle);
 
-        if (_initialSine < 0.0001f)
+        if (_initialSine < 0.001f)
         {
             return _leftQuat;
         }
@@ -362,6 +362,9 @@ public struct quat
     #region CONVERSION
     public static implicit operator System.Numerics.Quaternion      (quat                             _quat) => new System.Numerics.Quaternion      (_quat.x, _quat.y, _quat.z, _quat.w);
     public static implicit operator quat                            (System.Numerics.Quaternion       _quat) => new quat                            (_quat.X, _quat.Y, _quat.Z, _quat.W);
+    
+    public static implicit operator XrQuaternionf                   (quat                             _quat) => new XrQuaternionf   {x = _quat.x, y = _quat.y, z = _quat.z, w = _quat.w};
+    public static implicit operator quat                            (XrQuaternionf                    _quat) => new quat            (    _quat.x,     _quat.y,     _quat.z,     _quat.w);
     
     public static implicit operator quat                            (vec4                             _vec ) => new quat                            (_vec .x, _vec .y, _vec .z, _vec .w);
     #endregion

@@ -51,21 +51,20 @@ public unsafe class XRSpace : Disposable
         TimmyXR.xrDestroySpace(space);
     }
     
-    public void Recreate(XRSession _xrSession)
+    public void Recreate()
     {
-        TimmyXR.xrDestroySpace(space);
+        XRView _view        = OpenXR.views[0];
         
-        XRPose _pose        = new XRPose(OpenXR.views[0].pose);
-        
-        quat   _orientation = new quat(_pose.rotation.x, _pose.rotation.y, _pose.rotation.z, _pose.rotation.w) * new quat(referenceSpaceCreateInfo.poseInReferenceSpace.orientation.x, referenceSpaceCreateInfo.poseInReferenceSpace.orientation.y, referenceSpaceCreateInfo.poseInReferenceSpace.orientation.z, referenceSpaceCreateInfo.poseInReferenceSpace.orientation.w);
+        vec3   _position    = _view.position + referenceSpaceCreateInfo.poseInReferenceSpace.position;
+        quat   _orientation = _view.rotation * referenceSpaceCreateInfo.poseInReferenceSpace.orientation;
         
         referenceSpaceCreateInfo.poseInReferenceSpace = new XrPosef
         {
             position = new XrVector3f()
             {
-                x = referenceSpaceCreateInfo.poseInReferenceSpace.position.x + _pose.position.x,
-                y = 0f,
-                z = referenceSpaceCreateInfo.poseInReferenceSpace.position.z + _pose.position.z,
+                x = _position.x,
+                y = 0f         ,
+                z = _position.z,
             },
             orientation = new XrQuaternionf()
             {
@@ -75,11 +74,5 @@ public unsafe class XRSpace : Disposable
                 w = _orientation.w,
             },
         };
-        
-        fixed (XrSpace* _spacePtr = &space)
-        fixed (XrReferenceSpaceCreateInfo* _referenceSpaceCreateInfoPtr = &referenceSpaceCreateInfo)
-        {
-            TimmyXR.xrCreateReferenceSpace(_xrSession.session, _referenceSpaceCreateInfoPtr, _spacePtr);
-        }
     }
 }

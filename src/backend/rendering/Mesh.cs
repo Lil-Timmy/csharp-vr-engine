@@ -8,7 +8,7 @@ namespace Engine;
 public class Mesh
 {
     public readonly Buffer<float> vertexBuffer;
-    public readonly Texture  texture;
+    // public readonly Texture  texture;
     
     
     public Mesh(string _objPath)
