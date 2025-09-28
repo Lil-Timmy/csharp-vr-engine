@@ -281,16 +281,9 @@ public static unsafe class Window
             
             // Poll the window events, and call all per-frame events.
             Glfw.PollEvents();
-            Callback(_callback);
+            _callback();
+            Glfw.SwapBuffers(handle);
         }
-    }
-    private static void Callback(Action _callback)
-    {
-        // Call the per-frame callback and continue the loop.
-        _callback();
-        
-        // Swap the buffer
-        Glfw.SwapBuffers(handle);
     }
     ///<summary>Signals the event loop to close.</summary>///
     public static void Close()

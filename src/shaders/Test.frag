@@ -1,6 +1,8 @@
 #version 430 core
 
 
+in  vec2 fUV;
+in  vec3 fNormal;
 in  vec3 fColor;
 
 
@@ -9,5 +11,7 @@ out vec4 oFragColor;
 
 void main()
 {
-    oFragColor = vec4(fColor, 1.0);
+    // vec4(fNormal, 1.0);
+    // oFragColor = vec4(1.0, 1.0, 1.0, 1.0);
+    oFragColor = vec4(fNormal * 0.5 + 0.5, 1.0);
 }

@@ -36,7 +36,7 @@ public unsafe class XRSwapchain : Disposable
     private           XrFrameEndInfo              frameEndInfo             ;
 
     private readonly XrCompositionLayerProjectionView[] compositionLayerProjectionViews;
-    private readonly XrCompositionLayerProjection       compositionLayerProjection     ;
+    private          XrCompositionLayerProjection       compositionLayerProjection     ;
 
     private          XrViewLocateInfo viewLocateInfo;
     private          XrViewState      viewState     ;
@@ -252,7 +252,7 @@ public unsafe class XRSwapchain : Disposable
     }
 
 
-    public bool Wait(XRSession _xrSession, out XrView[] _views, out long _predictedDisplayTime)
+    public bool Wait(XRSession _xrSession, XRSpace _xrSpace, out XrView[] _views, out long _predictedDisplayTime)
     {
         fixed (XrFrameWaitInfo* _frameWaitInfoPtr = &frameWaitInfo)
         fixed (XrFrameState   * _frameStatePtr    = &frameState   )
@@ -272,6 +272,7 @@ public unsafe class XRSwapchain : Disposable
 
         viewLocateInfo.displayTime    = frameState.predictedDisplayTime;
         viewState     .viewStateFlags = (ulong)XrViewStateFlags.None;
+        viewLocateInfo.space          = _xrSpace.space;
 
         fixed (XrViewLocateInfo* _viewLocateInfoPtr = &viewLocateInfo)
         fixed (XrViewState     * _viewState         = &viewState     )
@@ -307,7 +308,7 @@ public unsafe class XRSwapchain : Disposable
         activeSwapchainImage      = images[activeSwapchainImageIndex];
     }
 
-    public void End(XRSession _xrSession)
+    public void End(XRSession _xrSession, XRSpace _xrSpace)
     {
         fixed (XrSwapchainImageReleaseInfo* _swapchainImageReleaseInfoPtr = &swapchainImageReleaseInfo)
         {
@@ -323,6 +324,8 @@ public unsafe class XRSwapchain : Disposable
             compositionLayerProjectionViews[_i].subImage.imageRect.extent.width  = (int)width     ;
             compositionLayerProjectionViews[_i].subImage.imageRect.extent.height = (int)height    ;
         }
+        
+        compositionLayerProjection.space = _xrSpace.space;
 
         fixed (XrCompositionLayerProjection* _compositionLayerProjectionPtr = &compositionLayerProjection)
         {

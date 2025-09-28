@@ -129,6 +129,39 @@ public struct mat4
 
         return _mat;
     }
+    
+    public static mat4 Scale(vec3 _vec)
+    {
+        mat4 _mat = identity;
+
+        _mat.x.x = _vec.x;
+        _mat.y.y = _vec.y;
+        _mat.z.z = _vec.z;
+
+        return _mat;
+    }
+
+    public static mat4 ProjectionFromFov(XrFovf fov, float near, float far)
+    {
+        // Compute tangents
+        float tanLeft   = Maths.Tan(fov.angleLeft);
+        float tanRight  = Maths.Tan(fov.angleRight);
+        float tanDown   = Maths.Tan(fov.angleDown);
+        float tanUp     = Maths.Tan(fov.angleUp);
+
+        float tanWidth  = tanRight - tanLeft;
+        float tanHeight = tanUp - tanDown;
+
+        mat4 mat = new mat4
+        {
+            x = new vec4(2f / tanWidth, 0f, 0f, 0f),
+            y = new vec4(0f, 2f / tanHeight, 0f, 0f),
+            z = new vec4((tanRight + tanLeft) / tanWidth, (tanUp + tanDown) / tanHeight, -(far + near) / (far - near), -1f),
+            w = new vec4(0f, 0f, -2f * far * near / (far - near), 0f)
+        };
+
+        return mat;
+    }
 
     #endregion
 

@@ -60,18 +60,25 @@ public unsafe class Shader : Disposable
         glUseProgram(handle);
     }
     
-    public void Uniform(string _name, float _value) => glUniform1f (UniformLocation(_name), _value);
-    public void Uniform(string _name, int   _value) => glUniform1i (UniformLocation(_name), _value);
-    public void Uniform(string _name, uint  _value) => glUniform1ui(UniformLocation(_name), _value);
-    public void Uniform(string _name, vec2  _value) => glUniform2f (UniformLocation(_name), _value.x, _value.y);
-    public void Uniform(string _name, ivec2 _value) => glUniform2i (UniformLocation(_name), _value.x, _value.y);
-    public void Uniform(string _name, uvec2 _value) => glUniform2ui(UniformLocation(_name), _value.x, _value.y);
-    public void Uniform(string _name, vec3  _value) => glUniform3f (UniformLocation(_name), _value.x, _value.y, _value.z);
-    public void Uniform(string _name, ivec3 _value) => glUniform3i (UniformLocation(_name), _value.x, _value.y, _value.z);
-    public void Uniform(string _name, uvec3 _value) => glUniform3ui(UniformLocation(_name), _value.x, _value.y, _value.z);
-    public void Uniform(string _name, vec4  _value) => glUniform4f (UniformLocation(_name), _value.x, _value.y, _value.z, _value.w);
-    public void Uniform(string _name, ivec4 _value) => glUniform4i (UniformLocation(_name), _value.x, _value.y, _value.z, _value.w);
-    public void Uniform(string _name, uvec4 _value) => glUniform4ui(UniformLocation(_name), _value.x, _value.y, _value.z, _value.w);
+    public void Uniform(string _name, float _value) => glUniform1f       (UniformLocation(_name), _value);
+    public void Uniform(string _name, int   _value) => glUniform1i       (UniformLocation(_name), _value);
+    public void Uniform(string _name, uint  _value) => glUniform1ui      (UniformLocation(_name), _value);
+    public void Uniform(string _name, vec2  _value) => glUniform2f       (UniformLocation(_name), _value.x, _value.y);
+    public void Uniform(string _name, ivec2 _value) => glUniform2i       (UniformLocation(_name), _value.x, _value.y);
+    public void Uniform(string _name, uvec2 _value) => glUniform2ui      (UniformLocation(_name), _value.x, _value.y);
+    public void Uniform(string _name, vec3  _value) => glUniform3f       (UniformLocation(_name), _value.x, _value.y, _value.z);
+    public void Uniform(string _name, ivec3 _value) => glUniform3i       (UniformLocation(_name), _value.x, _value.y, _value.z);
+    public void Uniform(string _name, uvec3 _value) => glUniform3ui      (UniformLocation(_name), _value.x, _value.y, _value.z);
+    public void Uniform(string _name, vec4  _value) => glUniform4f       (UniformLocation(_name), _value.x, _value.y, _value.z, _value.w);
+    public void Uniform(string _name, ivec4 _value) => glUniform4i       (UniformLocation(_name), _value.x, _value.y, _value.z, _value.w);
+    public void Uniform(string _name, uvec4 _value) => glUniform4ui      (UniformLocation(_name), _value.x, _value.y, _value.z, _value.w);
+    public void Uniform(string _name, mat4  _value) => glUniformMatrix4fv(UniformLocation(_name), false, 
+    [
+        _value.x.x, _value.x.y, _value.x.z, _value.x.w,
+        _value.y.x, _value.y.y, _value.y.z, _value.y.w,
+        _value.z.x, _value.z.y, _value.z.z, _value.z.w,
+        _value.w.x, _value.w.y, _value.w.z, _value.w.w,
+    ]);
     public void Uniform(string _name, Texture _texture, int _index)
     {
         glActiveTexture(GL_TEXTURE0 + _index);

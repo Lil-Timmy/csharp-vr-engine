@@ -36,7 +36,7 @@ public static unsafe class OpenXR
     public static bool Begin()
     {
         session.UpdateEvents(instance);
-        if (!session.isActive || !swapchain.Wait(session, out XrView[] _views, out long _predictedDisplayTime))
+        if (!session.isActive || !swapchain.Wait(session, space, out XrView[] _views, out long _predictedDisplayTime))
         {
             return false;
         }
@@ -45,13 +45,25 @@ public static unsafe class OpenXR
         nextDisplayTime = _predictedDisplayTime;
         
         swapchain.Begin(session);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0          );
+        glClear(GL_COLOR_BUFFER_BIT);
+        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+        glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, OpenXR.swapchain.activeSwapchainImage.handle, 0, 0);
+        glClear(GL_COLOR_BUFFER_BIT);
+        glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, OpenXR.swapchain.activeSwapchainImage.handle, 0, 1);
+        glClear(GL_COLOR_BUFFER_BIT);
         
         return true;
     }
-    
     public static void End()
     {
-        swapchain.End(session);
+        swapchain.End(session, space);
+    }
+    
+    public static void Recenter()
+    {
+        OpenXR.space.Recreate(OpenXR.session);
     }
     
     

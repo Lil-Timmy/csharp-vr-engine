@@ -179,6 +179,34 @@ public struct vec3
         );
     }
     #endregion
+    
+    #region MATH
+
+    public static vec3 Normalize(vec3 _vec)
+    {
+        return 1f / Maths.Sqrt
+        (
+            _vec.x * _vec.x +
+            _vec.y * _vec.y +
+            _vec.z * _vec.z
+        ) * _vec;
+    }
+
+    public static float Dot(vec3 _leftVec, vec3 _rightVec)
+    {
+        return _leftVec.x * _rightVec.x + _leftVec.y * _rightVec.y + _leftVec.z * _rightVec.z;
+    }
+    
+    public static vec3 Cross(vec3 _leftVec, vec3 _rightVec)
+    {
+        return new vec3(
+            _leftVec.y * _rightVec.z - _leftVec.z * _rightVec.y,
+            _leftVec.z * _rightVec.x - _leftVec.x * _rightVec.z,
+            _leftVec.x * _rightVec.y - _leftVec.y * _rightVec.x
+        );
+    }
+    
+    #endregion
 
 
 
@@ -218,6 +246,6 @@ public struct vec3
     
     
     #region OUTPUT
-    public override readonly string ToString() => $"({x}, {y}, {z})";
+    public override readonly string ToString() => $"({Maths.Round(x * 100f) * 0.01f}, {Maths.Round(y * 100f) * 0.01f}, {Maths.Round(z * 100f) * 0.01f})";
     #endregion
 }
