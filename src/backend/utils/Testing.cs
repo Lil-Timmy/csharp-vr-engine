@@ -43,8 +43,6 @@ public static class Testing
         renderable.localRotation = Input.rightControllerRotation;
         renderable.localScale    = new vec3(Input.rightControllerTrigger * 0.1f + 0.1f);
         
-        renderable.Dispose();
-        
         if (Input.rightControllerSecondary && !_prevDown)
         {
             OpenXR.Recenter();

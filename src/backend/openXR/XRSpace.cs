@@ -51,8 +51,10 @@ public unsafe class XRSpace : Disposable
         TimmyXR.xrDestroySpace(space);
     }
     
-    public void Recreate()
+    public void Recreate(XRSession _xrSession)
     {
+        TimmyXR.xrDestroySpace(space);
+        
         XRView _view        = OpenXR.views[0];
         
         vec3   _position    = _view.position + referenceSpaceCreateInfo.poseInReferenceSpace.position;
@@ -74,5 +76,11 @@ public unsafe class XRSpace : Disposable
                 w = _orientation.w,
             },
         };
+        
+        fixed (XrSpace* _spacePtr = &space)
+        fixed (XrReferenceSpaceCreateInfo* _referenceSpaceCreateInfoPtr = &referenceSpaceCreateInfo)
+        {
+            TimmyXR.xrCreateReferenceSpace(_xrSession.session, _referenceSpaceCreateInfoPtr, _spacePtr);
+        }
     }
 }

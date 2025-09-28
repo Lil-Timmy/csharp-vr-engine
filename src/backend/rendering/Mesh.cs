@@ -8,7 +8,9 @@ namespace Engine;
 public class Mesh
 {
     public readonly Buffer<float> vertexBuffer;
-    // public readonly Texture  texture;
+    
+    public readonly Texture  texture;
+    public readonly int      vertexCount;
     
     
     public Mesh(string _objPath)
@@ -103,5 +105,6 @@ public class Mesh
         }
         
         vertexBuffer = new Buffer<float>(Buffer.Target.VERTEXARRAY, Buffer.Usage.STATIC, _vertices);
+        vertexCount  = _vertices.Length;
     }
 }
