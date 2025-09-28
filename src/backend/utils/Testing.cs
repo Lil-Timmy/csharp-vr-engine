@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using static Engine.GL;
+﻿using System.IO;
 
 
 namespace Engine;
@@ -33,23 +31,25 @@ public static class Testing
                 // renderable.shader.Uniform("uTest", 0f);
             }
         );
-    }
-    
-    
-    private static bool _prevDown;
-    private static void OnUpdate()
-    {
-        renderable.localPosition = Input.rightControllerPosition;
-        renderable.localRotation = Input.rightControllerRotation;
-        renderable.localScale    = new vec3(Input.rightControllerTrigger * 0.1f + 0.1f);
         
-        if (Input.rightControllerSecondary && !_prevDown)
-        {
-            OpenXR.Recenter();
-        }
-        if (Input.rightControllerSecondary != _prevDown)
-        {
-            _prevDown = Input.rightControllerSecondary;
-        }
+        renderable.Dispose();
     }
+    
+    
+    // private static bool _prevDown;
+    // private static void OnUpdate()
+    // {
+    //     renderable.localPosition = Input.rightControllerPosition;
+    //     renderable.localRotation = Input.rightControllerRotation;
+    //     renderable.localScale    = new vec3(Input.rightControllerTrigger * 0.1f + 0.1f);
+        
+    //     if (Input.rightControllerSecondary && !_prevDown)
+    //     {
+    //         OpenXR.Recenter();
+    //     }
+    //     if (Input.rightControllerSecondary != _prevDown)
+    //     {
+    //         _prevDown = Input.rightControllerSecondary;
+    //     }
+    // }
 }

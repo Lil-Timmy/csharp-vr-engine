@@ -79,15 +79,16 @@ public static class Debug
             _exception = _exception.InnerException;
         }
         
+        // Log the exception cleanly by removing any excess logs (specifically from the Debug.Throw(..) and Debug.Error(..)).
         string _type     = _exception.GetType().ToString();
         string _message  = _exception.Message;
-        string _location = _exception.StackTrace.Split(" in ")[^1];
+        string _location = string.Join("\n", _exception.StackTrace.Split(Environment.NewLine).Where(_line => !_line.Contains("Engine.Debug"))).Trim();
         
         // Build the string and log it to the console.
         _text.AppendLine($"[ERROR]:"          );
         _text.AppendLine($"    -> {_type}"    );
         _text.AppendLine($"    -> {_message}" );
-        _text.AppendLine($"    -> {_location}");
+        _text.AppendLine($"    -> \n   {_location}");
 
         Log(_text.ToString(), _color);
     }

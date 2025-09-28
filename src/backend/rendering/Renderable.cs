@@ -40,26 +40,28 @@ public class Renderable : Transform
         shader.Uniform("uScaleMat"   , scaleMatrix   );
         
         
-        // Window.
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glViewport(0, 0, Window.size.x, Window.size.y);
-        shader.Uniform("uScreenMat", mat4.Position(-_eyeA.position) * mat4.Rotation(quat.Inverse(_eyeA.rotation)) * mat4.Projection(Maths.pi / 2f * (Window.size.x / Window.size.y), Window.size.x / Window.size.y, 0.01f, 100f));
-        callback();
-        glDrawArrays(GL_TRIANGLES, 0, mesh.vertexCount);
-        
         // Headset.
-        glBindFramebuffer(GL_FRAMEBUFFER, OpenXR.framebuffer);
         glViewport(0, 0, (int)OpenXR.swapchain.width, (int)OpenXR.swapchain.height);
         
         // Eye A.
-        glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, OpenXR.swapchain.activeSwapchainImage.handle, 0, 0);
+        glBindFramebuffer(GL_FRAMEBUFFER, OpenXR.framebuffers[0]);
         shader.Uniform("uScreenMat", mat4.Position(-_eyeA.position) * mat4.Rotation(quat.Inverse(_eyeA.rotation)) * mat4.Projection(_eyeA, 0.01f, 100f));
         callback();
         glDrawArrays(GL_TRIANGLES, 0, mesh.vertexCount);
         
         // Eye B.
-        glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, OpenXR.swapchain.activeSwapchainImage.handle, 0, 1);
+        glBindFramebuffer(GL_FRAMEBUFFER, OpenXR.framebuffers[1]);
         shader.Uniform("uScreenMat", mat4.Position(-_eyeB.position) * mat4.Rotation(quat.Inverse(_eyeB.rotation)) * mat4.Projection(_eyeB, 0.01f, 100f));
+        callback();
+        glDrawArrays(GL_TRIANGLES, 0, mesh.vertexCount);
+        
+        
+        // Desktop.
+        glViewport(0, 0, Window.size.x, Window.size.y);
+        
+        // Window.
+        glBindFramebuffer(GL_FRAMEBUFFER, OpenXR.framebuffers[2]);
+        shader.Uniform("uScreenMat", mat4.Position(-_eyeA.position) * mat4.Rotation(quat.Inverse(_eyeA.rotation)) * mat4.Projection(Maths.pi / 2f * (Window.size.x / Window.size.y), Window.size.x / Window.size.y, 0.01f, 100f));
         callback();
         glDrawArrays(GL_TRIANGLES, 0, mesh.vertexCount);
     }

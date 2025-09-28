@@ -45,5 +45,7 @@ public unsafe abstract class Disposable
         // Ensure the context is set, then call and remove the event from the dict.
         disposables();
         disposables = delegate { };
+        
+        Memory.Cleanup();
     }
 }
