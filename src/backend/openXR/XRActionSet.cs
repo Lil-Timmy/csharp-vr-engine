@@ -35,7 +35,7 @@ public unsafe class XRActionSet : Disposable
         }
 
 
-        fixed (XrActionSet* _actionSetPtr = &actionSet)
+        fixed (XrActionSet          * _actionSetPtr           = &actionSet          )
         fixed (XrActionSetCreateInfo* _actionSetCreateInfoPtr = &actionSetCreateInfo)
         {
             TimmyXR.xrCreateActionSet(_xrInstance.instance, _actionSetCreateInfoPtr, _actionSetPtr);

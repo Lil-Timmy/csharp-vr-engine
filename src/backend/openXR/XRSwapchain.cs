@@ -325,7 +325,11 @@ public unsafe class XRSwapchain : Disposable
             compositionLayerProjectionViews[_i].subImage.imageRect.extent.height = (int)height    ;
         }
         
-        compositionLayerProjection.space = _xrSpace.space;
+        fixed (XrCompositionLayerProjectionView* _compositionLayerProjectionViewsPtr = compositionLayerProjectionViews)
+        {
+            compositionLayerProjection.space = _xrSpace.space;
+            compositionLayerProjection.views = _compositionLayerProjectionViewsPtr;
+        }
 
         fixed (XrCompositionLayerProjection* _compositionLayerProjectionPtr = &compositionLayerProjection)
         {

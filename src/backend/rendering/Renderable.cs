@@ -61,7 +61,7 @@ public class Renderable : Transform
         
         // Window.
         glBindFramebuffer(GL_FRAMEBUFFER, OpenXR.framebuffers[2]);
-        shader.Uniform("uScreenMat", mat4.Position(-_eyeA.position) * mat4.Rotation(quat.Inverse(_eyeA.rotation)) * mat4.Projection(Maths.pi / 2f * (Window.size.x / Window.size.y), Window.size.x / Window.size.y, 0.01f, 100f));
+        shader.Uniform("uScreenMat", mat4.Position(-_eyeA.position) * mat4.Rotation(quat.Inverse(_eyeA.rotation)) * mat4.Projection(Maths.pi / 2f, 1.0f, 0.01f, 100f));
         callback();
         glDrawArrays(GL_TRIANGLES, 0, mesh.vertexCount);
     }

@@ -127,7 +127,7 @@ public unsafe class XRInputs
     
 
     private readonly XrActiveActionSet activeActionSet;
-    private readonly XrActionsSyncInfo actionsSyncInfo;
+    private          XrActionsSyncInfo actionsSyncInfo;
 
 
 
@@ -253,6 +253,11 @@ public unsafe class XRInputs
 
     public void UpdateActions(XRInstance _xrInstance, XRSession _xrSession, XRSpace _xrSpace, XRView[] _views, long _predictedDisplayTime)
     {
+        fixed (XrActiveActionSet* _activeActionSetPtr = &activeActionSet)
+        {
+            actionsSyncInfo.activeActionSets = _activeActionSetPtr;
+        }
+        
         fixed (XrActionsSyncInfo* _actionsSyncInfoPtr = &actionsSyncInfo)
         {
             if (TimmyXR.xrSyncActions(_xrSession.session, _actionsSyncInfoPtr) != XrResult.XR_SUCCESS)

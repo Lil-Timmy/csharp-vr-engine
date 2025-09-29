@@ -6,13 +6,14 @@ using System.Text;
 namespace Engine;
 
 
-public static unsafe class TimmyXR
+public static unsafe partial class TimmyXR
 {
     public static XrInstance xrInstance = new XrInstance(0);
 
 
-    [DllImport("openxr_loader.dll", EntryPoint = "xrGetInstanceProcAddr", CallingConvention = CallingConvention.Cdecl)]
-    private static extern int xrGetInstanceProcAddr(ulong instance, byte* name, void** function);
+    [LibraryImport("openxr_loader.dll", EntryPoint = "xrGetInstanceProcAddr")]
+    [UnmanagedCallConv(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvCdecl)])]
+    private static partial int xrGetInstanceProcAddr(ulong instance, byte* name, void** function);
 
     private static unsafe T LoadFunction<T>(string _name) where T : Delegate
     {
@@ -23,7 +24,9 @@ public static unsafe class TimmyXR
             void* _funcPtr = null;
             int _result = xrGetInstanceProcAddr(xrInstance.Handle, pName, &_funcPtr);
             if (_result != 0 || _funcPtr == null)
-                throw new InvalidOperationException($"Failed to load {_name}, result {_result}");
+            {
+                Debug.Error($"Failed to load {_name} - {_result}");
+            }
 
             return (T)Marshal.GetDelegateForFunctionPointer((IntPtr)_funcPtr, typeof(T));
         }
