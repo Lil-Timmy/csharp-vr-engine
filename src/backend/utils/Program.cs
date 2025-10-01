@@ -31,9 +31,6 @@ public static class Program
             // Initialize OpenXR.
             OpenXR.Initialize("VR-App", "VR-Engine");
             
-            // Initialize the input for the application.
-            Input.Initialize();
-            
             // Call all start event functions.
             foreach (string _callback in initCallbacks ) AssemblyLoader.Call(_callback);
             

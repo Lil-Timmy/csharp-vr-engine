@@ -38,6 +38,8 @@ public static unsafe class Window
             Glfw.SetWindowSize(handle, size_.x, size_.y);
         }
     }
+    ///<summary>The aspect ratio of the window. (width/height)</summary>///
+    public static float aspectRatio => size_.x / (float)size_.y;
     ///<summary>The position of the window.</summary>///
     public static ivec2 position
     {

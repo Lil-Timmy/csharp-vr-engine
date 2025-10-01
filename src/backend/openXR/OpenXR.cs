@@ -7,18 +7,18 @@ namespace Engine;
 
 public static unsafe class OpenXR
 {
-    public static XRInstance     instance        { get; private set; }
-    public static XRSystemID     systemID        { get; private set; }
-    public static XRRequirements requirements    { get; private set; }
-    public static XRSession      session         { get; private set; }
-    public static XRSpace        space           { get; private set; }
-    public static XRSwapchain    swapchain       { get; private set; }
+    private static XRInstance     instance;
+    private static XRSystemID     systemID;
+    private static XRRequirements requirements;
+    private static XRSession      session;
+    private static XRSpace        space;
+    private static XRSwapchain    swapchain;
     
-    public static XRView[]       views           { get; private set; }
-    public static long           nextDisplayTime { get; private set; }
+    private static XRView[]       views;
     
-    public static uint[]         framebuffers    { get; private set; }
-    public static uint[]         depthTextures   { get; private set; }
+    private static uint[]         framebuffers ;
+    private static uint[]         depthTextures;
+    private static mat4[]         screenMatrices;
     
     
     public static void Initialize(string appName, string engineName)
@@ -30,8 +30,9 @@ public static unsafe class OpenXR
         space        = new XRSpace       (session);
         swapchain    = new XRSwapchain   (instance, space, session, systemID);
         
-        framebuffers  = new uint[3];
-        depthTextures = new uint[3];
+        framebuffers   = new uint[3];
+        depthTextures  = new uint[3];
+        screenMatrices = new mat4[3];
         
         glEnable(GL_DEPTH_TEST);
         
@@ -52,19 +53,18 @@ public static unsafe class OpenXR
             framebuffers [_i] = _framebuffer;
             depthTextures[_i] = _depthTexture;
         }
+        
+        Input.Initialize(instance, session);
     }
     
     
     public static bool Begin()
     {
         session.UpdateEvents(instance);
-        if (!session.isActive || !swapchain.Wait(session, space, out XRView[] _views, out long _predictedDisplayTime))
+        if (!session.isActive || !swapchain.Wait(session, space, out views, out long _predictedDisplayTime))
         {
             return false;
         }
-        
-        views           = _views;
-        nextDisplayTime = _predictedDisplayTime;
         
         swapchain.Begin(session);
         
@@ -79,6 +79,15 @@ public static unsafe class OpenXR
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffers[2]);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
+        Input.Update(instance, session, space, views, _predictedDisplayTime);
+        
+        XRView _eyeA = views[0];
+        XRView _eyeB = views[1];
+        
+        screenMatrices[0] = mat4.Position(-_eyeA     .position) * mat4.Rotation(quat.Inverse(         _eyeA     .rotation )) * mat4.Projection(_eyeA, Input.NEAR, Input.FAR);
+        screenMatrices[1] = mat4.Position(-_eyeB     .position) * mat4.Rotation(quat.Inverse(         _eyeB     .rotation )) * mat4.Projection(_eyeB, Input.NEAR, Input.FAR);
+        screenMatrices[2] = mat4.Position(-TestCamera.position) * mat4.Rotation(quat.Inverse(new quat(TestCamera.rotation))) * mat4.Projection(Input.FOV, Window.aspectRatio, 0.01f, 100f);
+        
         return true;
     }
     public static void End()
@@ -86,9 +95,28 @@ public static unsafe class OpenXR
         swapchain.End(session, space);
     }
     
+    
     public static void Recenter()
     {
-        OpenXR.space.Recreate(session);
+        OpenXR.space.Recreate(session, views[0]);
+    }
+    
+    public static void Draw(Shader _shader, Action _callback)
+    {
+        GL.glViewport(0, 0, (int)OpenXR.swapchain.width, (int)OpenXR.swapchain.height);
+        GL.glBindFramebuffer(GL.GL_FRAMEBUFFER, OpenXR.framebuffers[0]);
+        _shader.Uniform("uScreenMat", OpenXR.screenMatrices[0]);
+        _callback();
+        
+        GL.glBindFramebuffer(GL.GL_FRAMEBUFFER, OpenXR.framebuffers[1]);
+        _shader.Uniform("uScreenMat", OpenXR.screenMatrices[1]);
+        _callback();
+        
+        GL.glViewport(0, 0, Window.size.x, Window.size.y);
+        
+        GL.glBindFramebuffer(GL.GL_FRAMEBUFFER, OpenXR.framebuffers[2]);
+        _shader.Uniform("uScreenMat", OpenXR.screenMatrices[2]);
+        _callback();
     }
     
     

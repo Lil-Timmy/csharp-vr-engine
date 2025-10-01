@@ -7,17 +7,22 @@ namespace Engine;
 
 public static class Input
 {
+    public const float NEAR =   0.01f;
+    public const float FAR  = 100.00f;
+    public const float FOV  = Maths.pi * 0.5f;
+    
+    
+    public static ivec2 mousePosition { get; private set; }
+    
     private static readonly List<Key> down = new List<Key>();
     private static readonly List<Key> held = new List<Key>();
     private static readonly List<Key> up   = new List<Key>();
-    
-    public static ivec2 mousePosition { get; private set; }
     
     private static XRInputs xrInputs;
     
 
     ///<summary>Creates and initializes GLFW's input system for input-action callbacks.</summary>///
-    public static void Initialize()
+    public static void Initialize(XRInstance _xrInstance, XRSession _xrSession)
     {
         Glfw.SetKeyCallback(Window.handle, (_window, _key, _code, _state, _modifiers) =>
         {
@@ -71,16 +76,16 @@ public static class Input
         });
         
         
-        xrInputs = new XRInputs(OpenXR.instance, OpenXR.session);
+        xrInputs = new XRInputs(_xrInstance, _xrSession);
     }
     
     
-    private static void OnEarlyUpdate()
+    public static void Update(XRInstance _xrInstance, XRSession _xrSession, XRSpace _xrSpace, XRView[] _xrViews, long _nextDisplayTime)
     {
-        xrInputs.UpdateActions(OpenXR.instance, OpenXR.session, OpenXR.space, OpenXR.views, OpenXR.nextDisplayTime);
+        xrInputs.UpdateActions(_xrInstance, _xrSession, _xrSpace, _xrViews, _nextDisplayTime);
     }
     
-    private static void OnLateUpdate()
+    private static void OnEndUpdate()
     {
         down.Clear();
         up  .Clear();

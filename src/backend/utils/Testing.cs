@@ -6,72 +6,46 @@ namespace Engine;
 
 public static class Testing
 {
-    private static Renderable right;
-    private static Renderable left;
-    
+    private static DebugSphere right;
+    private static DebugCube   left;
     
     
     private static void OnBegin()
     {
-        right = new Renderable
+        right = new DebugSphere(vec3.ZERO, quat.IDENTITY, new vec3(0.5f), vec3.ONE);
+        left  = new DebugCube  (vec3.ZERO, quat.IDENTITY, new vec3(0.5f), vec3.ONE);
+        
+        Renderable _room = new Renderable
         (
             null,
-            
             vec3.ZERO,
             quat.IDENTITY,
             vec3.ONE,
-            
-            new Mesh("src/models/Test.obj"),
-            new Shader
-            (
-                File.ReadAllText("src/shaders/Test.vert"),
-                File.ReadAllText("src/shaders/Test.frag")
-            ),
+            new Mesh  ("src/models/Room.obj"),
+            new Shader(File.ReadAllText("src/shaders/Test.vert"), File.ReadAllText("src/shaders/Test.frag")),
             () =>
             {
-                // renderable.shader.Uniform("uTest", 0f);
-            }
-        );
-        left = new Renderable
-        (
-            null,
-            
-            vec3.ZERO,
-            quat.IDENTITY,
-            vec3.ONE,
-            
-            new Mesh("src/models/Test.obj"),
-            new Shader
-            (
-                File.ReadAllText("src/shaders/Test.vert"),
-                File.ReadAllText("src/shaders/Test.frag")
-            ),
-            () =>
-            {
-                // renderable.shader.Uniform("uTest", 0f);
+                
             }
         );
     }
     
     
-    private static bool _prevDown;
     private static void OnUpdate()
     {
-        right.localPosition = Input.rightControllerPosition;
-        right.localRotation = Input.rightControllerRotation;
-        right.localScale    = new vec3(Input.rightControllerTrigger * 1.0f + 0.1f);
+        right.position = Input.rightControllerPosition;
+        right.rotation = Input.rightControllerRotation;
+        right.scale    = new vec3(Input.rightControllerTrigger * 0.2f + 0.01f);
         
-        left.localPosition  = Input.leftControllerPosition;
-        left.localRotation  = Input.leftControllerRotation;
-        left.localScale     = new vec3(Input.leftControllerTrigger  * 1.0f + 0.1f);
         
-        if (Input.rightControllerSecondary && !_prevDown)
+        left.position = Input.leftControllerPosition;
+        left.rotation = Input.leftControllerRotation;
+        left.scale    = new vec3(Input.leftControllerTrigger * 0.2f + 0.01f);
+        
+        if (Input.rightControllerSecondary)
         {
-            OpenXR.Recenter();
-        }
-        if (Input.rightControllerSecondary != _prevDown)
-        {
-            _prevDown = Input.rightControllerSecondary;
+            TestCamera.position =       Input.headsetPosition;
+            TestCamera.rotation = (vec3)Input.headsetRotation;
         }
     }
 }

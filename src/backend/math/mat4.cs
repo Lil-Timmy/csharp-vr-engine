@@ -162,16 +162,16 @@ public struct mat4
         return mat;
     }
     
-    public static mat4 Projection(float _fov, float aspect, float near, float far)
+    public static mat4 Projection(float _fov, float _aspectRatio, float _near, float _far)
     {
         float _invFov = 1f / (float)Maths.Tan(_fov * 0.5f);
 
         return new mat4
         (
-            _invFov / aspect, 0f     , 0f                             ,  0f,
+            _invFov / _aspectRatio, 0f     , 0f                             ,  0f,
             0f              , _invFov, 0f                             ,  0f,
-            0f              , 0f     , -(far + near) / (far - near)   , -1f,
-            0f              , 0f     , -2f * far * near / (far - near),  0f
+            0f              , 0f     , -(_far + _near) / (_far - _near)   , -1f,
+            0f              , 0f     , -2f * _far * _near / (_far - _near),  0f
         );
     }
 

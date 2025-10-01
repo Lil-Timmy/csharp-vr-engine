@@ -16,8 +16,8 @@ public struct vec3
     public static readonly vec3 LEFT  = new vec3(-1,  0,  0);
     public static readonly vec3 UP    = new vec3( 0,  1,  0);
     public static readonly vec3 DOWN  = new vec3( 0, -1,  0);
-    public static readonly vec3 FOR   = new vec3( 0,  0,  1);
-    public static readonly vec3 BACK  = new vec3( 0,  0, -1);
+    public static readonly vec3 FOR   = new vec3( 0,  0, -1);
+    public static readonly vec3 BACK  = new vec3( 0,  0,  1);
     
     
     public float x;
@@ -235,11 +235,11 @@ public struct vec3
     
     public static implicit operator vec3                          (ivec3                   _vec ) => new vec3                          (_vec.x, _vec.y, _vec.z);
     
-    public static implicit operator vec3                          (quat                    _quat) => new vec3
+    public static explicit operator vec3                          (quat                    _quat) => new vec3
     (
-        MathF.Atan2(2.0f * (_quat.w * _quat.x + _quat.y * _quat.z), 1.0f - 2.0f * (_quat.x * _quat.x + _quat.y * _quat.y)), // Pitch - X
-        MathF.Atan2(2.0f * (_quat.w * _quat.y - _quat.x * _quat.z), 1.0f - 2.0f * (_quat.y * _quat.y + _quat.z * _quat.z)), // Yaw   - Y
-        MathF.Atan2(2.0f * (_quat.w * _quat.z + _quat.x * _quat.y), 1.0f - 2.0f * (_quat.z * _quat.z + _quat.y * _quat.y))  // Roll  - Z
+        Maths.Atan2(2.0f * (_quat.w * _quat.x + _quat.y * _quat.z), 1.0f - 2.0f * (_quat.x * _quat.x + _quat.y * _quat.y)), // Pitch - X
+        Maths.Atan2(2.0f * (_quat.w * _quat.y - _quat.x * _quat.z), 1.0f - 2.0f * (_quat.y * _quat.y + _quat.z * _quat.z)), // Yaw   - Y
+        Maths.Atan2(2.0f * (_quat.w * _quat.z + _quat.x * _quat.y), 1.0f - 2.0f * (_quat.z * _quat.z + _quat.y * _quat.y))  // Roll  - Z
     );
     #endregion
     

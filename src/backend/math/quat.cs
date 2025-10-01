@@ -24,14 +24,14 @@ public struct quat
     }
     public quat(vec3 _euler)
     {
-        float _cPitch = MathF.Cos(_euler.x * 0.5f);
-        float _sPitch = MathF.Sin(_euler.x * 0.5f);
+        float _cPitch = Maths.Cos(_euler.x * 0.5f);
+        float _sPitch = Maths.Sin(_euler.x * 0.5f);
         
-        float _cYaw   = MathF.Cos(_euler.y * 0.5f);
-        float _sYaw   = MathF.Sin(_euler.y * 0.5f);
+        float _cYaw   = Maths.Cos(_euler.y * 0.5f);
+        float _sYaw   = Maths.Sin(_euler.y * 0.5f);
         
-        float _cRoll  = MathF.Cos(_euler.z * 0.5f);
-        float _sRoll  = MathF.Sin(_euler.z * 0.5f);
+        float _cRoll  = Maths.Cos(_euler.z * 0.5f);
+        float _sRoll  = Maths.Sin(_euler.z * 0.5f);
 
         (x, y, z, w) =
         (
@@ -162,6 +162,18 @@ public struct quat
         );
     }
     #endregion
+    
+    #region NEGATE
+    public static quat operator -(quat _quat)
+    {
+        return new quat(
+            -_quat.x,
+            -_quat.y,
+            -_quat.z,
+            -_quat.w
+        );
+    }
+    #endregion
 
 
 
@@ -177,82 +189,6 @@ public struct quat
     
     public static bool operator ==(quat _leftQuat, quat _rightQuat) =>  _leftQuat.Equals(_rightQuat);
     public static bool operator !=(quat _leftQuat, quat _rightQuat) => !_leftQuat.Equals(_rightQuat);
-    #endregion
-
-
-
-    #region AXES
-
-    public static vec3 AxisX(quat _quat)
-    {
-        float _x = _quat.x, _y = _quat.y, _z = _quat.z, _w = _quat.w;
-
-        return new vec3(
-            1f - 2f * (_y * _y + _z * _z),
-            2f * (_x * _y - _w * _z),
-            2f * (_x * _z + _w * _y)
-        );
-    }
-    
-    public static vec3 AxisY(quat _quat)
-    {
-        float _x = _quat.x, _y = _quat.y, _z = _quat.z, _w = _quat.w;
-
-        return new vec3(
-            2f * (_x * _y + _w * _z),
-            1f - 2f * (_x * _x + _z * _z),
-            2f * (_y * _z - _w * _x)
-        );
-    }
-    
-    public static vec3 AxisZ(quat _quat)
-    {
-        float _x = _quat.x, _y = _quat.y, _z = _quat.z, _w = _quat.w;
-
-        return new vec3(
-            2f * (_x * _z - _w * _y),
-            2f * (_y * _z + _w * _x),
-            1f - 2f * (_x * _x + _y * _y)
-        );
-    }
-
-    public static (vec3 _axisX, vec3 _axisY, vec3 _axisZ) Axes(quat _quat)
-    {
-        float _x = _quat.x, _y = _quat.y, _z = _quat.z, _w = _quat.w;
-
-        float _xx = _x * _x;
-        float _yy = _y * _y;
-        float _zz = _z * _z;
-
-        float _xy = _x * _y;
-        float _xz = _x * _z;
-        
-        float _yz = _y * _z;
-
-        float _wx = _w * _x;
-        float _wy = _w * _y;
-        float _wz = _w * _z;
-        
-
-        return (
-            new vec3(
-                1f - 2f * (_yy + _zz),
-                2f * (_xy - _wz),
-                2f * (_xz + _wy)
-            ),
-            new vec3(
-                2f * (_xy + _wz),
-                1f - 2f * (_xx + _zz),
-                2f * (_yz - _wx)
-            ),
-            new vec3(
-                2f * (_xz - _wy),
-                2f * (_yz + _wx),
-                1f - 2f * (_xx + _yy)
-            )
-        );
-    }
-
     #endregion
 
 
@@ -325,33 +261,64 @@ public struct quat
         ;
     }
 
-    public static quat Slerp(quat _leftQuat, quat _rightQuat, float _t)
+    public static quat Lerp(quat _leftQuat, quat _rightQuat, float _t)
     {
-        float _dotAngle = Dot(_leftQuat, _rightQuat);
+        return Normalize(_leftQuat * (1f - _t) + _rightQuat * _t);
+    }
+    public static quat Slerp(quat q0, quat q1, float t)
+    {
+        float dot = Dot(q0, q1);
         
-        _rightQuat *= _dotAngle < 0.0f ? -1.0f : 1.0f;
-        _dotAngle = Maths.Abs(_dotAngle);
-
-        float _initialAngle = (float)Maths.Acos(_dotAngle);
-        float _interpolatedAngle = _initialAngle * _t; 
-        
-        float _initialSine = (float)Maths.Sin(_initialAngle);
-
-        if (_initialSine < 0.001f)
+        if (dot < 0f)
         {
-            return _leftQuat;
+            q1 = -q1;  // flip
+            dot = -dot;
         }
         
-        float _interpolatedSine = (float)Maths.Sin(_initialAngle * _t);
+        dot = Maths.Clamp(dot, -1f, 1f); // prevent NaN
+        
+        float omega = Maths.Acos(dot);
+        float sinOmega = Maths.Sin(omega);
 
-        float _slerpA = (float)Maths.Cos(_interpolatedAngle) - _dotAngle * _interpolatedSine / _initialSine;
-        float _slerpB = _interpolatedSine / _initialSine;
+        if (sinOmega < 0.001f)
+        {
+            // quaternions are very close, use linear interpolation
+            return Lerp(q0, q1, t);
+        }
+
+        float s0 = Maths.Sin((1f - t) * omega) / sinOmega;
+        float s1 = Maths.Sin(t * omega) / sinOmega;
 
         return new quat(
-            _slerpA * _leftQuat.x + _slerpB * _rightQuat.x,
-            _slerpA * _leftQuat.y + _slerpB * _rightQuat.y,
-            _slerpA * _leftQuat.z + _slerpB * _rightQuat.z,
-            _slerpA * _leftQuat.w + _slerpB * _rightQuat.w
+            s0 * q0.x + s1 * q1.x,
+            s0 * q0.y + s1 * q1.y,
+            s0 * q0.z + s1 * q1.z,
+            s0 * q0.w + s1 * q1.w
+        );
+    }
+    
+    public static quat Scale(quat _quat, float _factor)
+    {
+        float _angle  = Maths.Acos(               _quat.w) * _factor;
+        float _length = Maths.Sqrt(1f - _quat.w * _quat.w);
+
+        if (_length < 0.001f)
+        {
+            return new quat
+            (
+                Maths.Sin(_angle),
+                0f,
+                0f,
+                Maths.Cos(_angle)
+            );
+        }
+
+        return new quat
+        (
+            Maths.Sin(_angle) * _quat.x / _length,
+            Maths.Sin(_angle) * _quat.y / _length,
+            Maths.Sin(_angle) * _quat.z / _length,
+            Maths.Cos(_angle)
         );
     }
     
