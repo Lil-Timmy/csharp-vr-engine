@@ -38,8 +38,8 @@ public static class Player
             parent,
             vec3.ZERO,
             quat.IDENTITY,
-            // new vec3(0.14f, 0.22f, 0.18f),
-            vec3.ZERO,
+            new vec3(0.14f, 0.22f, 0.18f),
+            // vec3.ZERO,
             _mesh,
             _shader,
             () =>
@@ -82,15 +82,20 @@ public static class Player
             parent,
             vec3.ZERO,
             quat.IDENTITY,
-            // new vec3(0.07f, 0.08f, 0.07f),
-            vec3.ZERO,
+            new vec3(0.07f, 0.08f, 0.07f),
+            // vec3.ZERO,
             _mesh,
             _shader,
             () =>
             {
+                axisAngle _axis = (axisAngle)head.localRotation;
+                _axis.axis.x   *= 0.5f;
+                _axis.axis.z   *= 0.5f;
+                _axis.axis      = vec3.Normalize(_axis.axis);
+                quat _rot       = (quat)_axis;
+                
                 neck.localPosition = head.localPosition + head.localRotation * vec3.DOWN * 0.13f;
-                neck.localRotation = head.localRotation;
-                Debug.Log((vec3)head.rotation);
+                neck.localRotation = _rot;
             }
         );
         chest = new Renderable
@@ -104,7 +109,7 @@ public static class Player
             () =>
             {
                 chest.localPosition = neck.localPosition + vec3.DOWN * 0.17f;
-                chest.localRotation = quat.IDENTITY;
+                chest.localRotation = (quat)new vec3(0f, ((vec3)head.rotation).y, 0f);
             }
         );
     }
@@ -112,6 +117,6 @@ public static class Player
     
     private static void OnUpdate()
     {
-        // parent.position = new vec3(-Input.headsetPosition.x - 1.5f, 0f, -Input.headsetPosition.z + 0.5f);
+        parent.position = new vec3(-Input.headsetPosition.x - 1.5f, 0f, -Input.headsetPosition.z + 0.5f);
     }
 }

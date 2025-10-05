@@ -15,14 +15,17 @@ uniform mat4 uScreenMat;
 
 out vec2 fUV;
 out vec3 fNormal;
+out vec3 fPosition;
 
 
 void main()
 {
-    fUV       = vUV;
-    fNormal   = (uRotationMat * vec4(vNormal, 1.0)).xyz;
+    vec4 _position = ((uPositionMat * uRotationMat * uScaleMat) * vec4(vPosition, 1.0));
     
-    vec4 _position = uScreenMat * ((uPositionMat * uRotationMat * uScaleMat) * vec4(vPosition, 1.0));
+    fUV            = vUV;
+    fNormal        = (uRotationMat * vec4(vNormal, 1.0)).xyz;
+    fPosition      = _position.xyz;
     
-    gl_Position = _position;
+    
+    gl_Position    = uScreenMat * _position;
 }

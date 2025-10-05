@@ -22,25 +22,6 @@ public struct quat
     {
         (x, y, z, w) = (_x, _y, _z, _w);
     }
-    public quat(vec3 _euler)
-    {
-        float _cPitch = Maths.Cos(_euler.x * 0.5f);
-        float _sPitch = Maths.Sin(_euler.x * 0.5f);
-        
-        float _cYaw   = Maths.Cos(_euler.y * 0.5f);
-        float _sYaw   = Maths.Sin(_euler.y * 0.5f);
-        
-        float _cRoll  = Maths.Cos(_euler.z * 0.5f);
-        float _sRoll  = Maths.Sin(_euler.z * 0.5f);
-
-        (x, y, z, w) =
-        (
-            _sPitch * _cYaw * _cRoll + _cPitch * _sYaw * _sRoll,
-            _cPitch * _sYaw * _cRoll - _sPitch * _cYaw * _sRoll,
-            _cPitch * _cYaw * _sRoll - _sPitch * _sYaw * _cRoll,
-            _cPitch * _cYaw * _cRoll + _sPitch * _sYaw * _sRoll
-        );
-    }
 
 
 
@@ -309,13 +290,47 @@ public struct quat
 
 
     #region CONVERSION
-    public static implicit operator System.Numerics.Quaternion      (quat                             _quat) => new System.Numerics.Quaternion      (_quat.x, _quat.y, _quat.z, _quat.w);
-    public static implicit operator quat                            (System.Numerics.Quaternion       _quat) => new quat                            (_quat.X, _quat.Y, _quat.Z, _quat.W);
+    public static implicit operator System.Numerics.Quaternion      (quat                             _quat     ) => new System.Numerics.Quaternion      (_quat.x, _quat.y, _quat.z, _quat.w);
+    public static implicit operator quat                            (System.Numerics.Quaternion       _quat     ) => new quat                            (_quat.X, _quat.Y, _quat.Z, _quat.W);
     
-    public static implicit operator XrQuaternionf                   (quat                             _quat) => new XrQuaternionf   {x = _quat.x, y = _quat.y, z = _quat.z, w = _quat.w};
-    public static implicit operator quat                            (XrQuaternionf                    _quat) => new quat            (    _quat.x,     _quat.y,     _quat.z,     _quat.w);
+    public static implicit operator XrQuaternionf                   (quat                             _quat     ) => new XrQuaternionf   {x = _quat.x, y = _quat.y, z = _quat.z, w = _quat.w};
+    public static implicit operator quat                            (XrQuaternionf                    _quat     ) => new quat            (    _quat.x,     _quat.y,     _quat.z,     _quat.w);
     
-    public static implicit operator quat                            (vec4                             _vec ) => new quat                            (_vec .x, _vec .y, _vec .z, _vec .w);
+    public static implicit operator quat                            (vec4                             _vec      ) => new quat                            (_vec .x, _vec .y, _vec .z, _vec .w);
+    
+    public static explicit operator quat                            (vec3                             _euler    )
+    {
+        float _cPitch = Maths.Cos(_euler.x * 0.5f);
+        float _sPitch = Maths.Sin(_euler.x * 0.5f);
+        
+        float _cYaw   = Maths.Cos(_euler.y * 0.5f);
+        float _sYaw   = Maths.Sin(_euler.y * 0.5f);
+        
+        float _cRoll  = Maths.Cos(_euler.z * 0.5f);
+        float _sRoll  = Maths.Sin(_euler.z * 0.5f);
+
+        return new quat
+        (
+            _sPitch * _cYaw * _cRoll + _cPitch * _sYaw * _sRoll,
+            _cPitch * _sYaw * _cRoll - _sPitch * _cYaw * _sRoll,
+            _cPitch * _cYaw * _sRoll - _sPitch * _sYaw * _cRoll,
+            _cPitch * _cYaw * _cRoll + _sPitch * _sYaw * _sRoll
+        );
+    }
+    #region CONVERSION
+    public static explicit operator quat                            (axisAngle                        _axisAngle)
+    {
+        float _s = Maths.Sin(_axisAngle.angle * 0.5f);
+        
+        return new quat
+        (
+            _axisAngle.axis.x * _s,
+            _axisAngle.axis.y * _s,
+            _axisAngle.axis.z * _s,
+            Maths.Cos(_axisAngle.angle * 0.5f)
+        );
+    }
+    #endregion
     #endregion
 
 

@@ -21,14 +21,19 @@ public static class TestCamera
     {
         if (Input.mousePosition != previousMousePosition)
         {
-            vec3 _rotation = new vec3
-            (
-                (Input.mousePosition.y - previousMousePosition.y) *  SENSITIVITY,
-                (Input.mousePosition.x - previousMousePosition.x) * -SENSITIVITY,
-                0f
-            );
+            if (Input.Held(Input.Key.ButtonMiddle))
+            {
+                vec3 _rotation = new vec3
+                (
+                    (Input.mousePosition.y - previousMousePosition.y) *  SENSITIVITY,
+                    (Input.mousePosition.x - previousMousePosition.x) * -SENSITIVITY,
+                    0f
+                );
+                
+                rotation *= (quat)_rotation;
+            }
             
-            rotation *= new quat(_rotation);
+            
             previousMousePosition = Input.mousePosition;
         }
         
