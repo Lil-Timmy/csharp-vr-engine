@@ -8,115 +8,118 @@ namespace Engine;
 
 public static class Player
 {
-    private static Transform parent;
+    private static Transform pivot;
+    
+    private static vec3 previousHeadsetPosition         = vec3.ZERO;
+    private static quat previousHeadsetRotation         = quat.IDENTITY;
+    
+    private static vec3 previousLeftControllerPosition  = vec3.ZERO;
+    private static quat previousLeftControllerRotation  = quat.IDENTITY;
+    private static vec3 previousRightControllerPosition = vec3.ZERO;
+    private static quat previousRightControllerRotation = quat.IDENTITY;
     
     private static Renderable head;
+    private static Renderable rightPalm;
+    private static Renderable leftPalm;
+    
     private static Renderable neck;
     private static Renderable chest;
-    private static Renderable torso;
-    
-    private static Renderable rightShoulder;
-    private static Renderable rightElbow;
-    private static Renderable rightWrist;
-    private static Renderable rightPalm;
-    
-    private static Renderable leftShoulder;
-    private static Renderable leftElbow;
-    private static Renderable leftWrist;
-    private static Renderable leftPalm;
     
     
     private static void OnBegin()
     {
-        parent = new Transform(null, vec3.ZERO, quat.IDENTITY, vec3.ONE);
+        pivot = new Transform(null, vec3.ZERO, quat.IDENTITY, vec3.ONE);
         
         Mesh   _mesh   = new Mesh  (File.ReadAllLines("assets/models/debug/Cube.obj")                                           );
         Shader _shader = new Shader(File.ReadAllText ("assets/shaders/Test.vert"    ), File.ReadAllText("assets/shaders/Test.frag"));
         
         head = new Renderable
         (
-            parent,
+            pivot,
             vec3.ZERO,
             quat.IDENTITY,
-            new vec3(0.14f, 0.22f, 0.18f),
-            // vec3.ZERO,
+            // new vec3(0.14f, 0.22f, 0.18f),
+            vec3.ZERO,
             _mesh,
             _shader,
-            () =>
-            {
-                head.localPosition = Input.headsetPosition;
-                head.localRotation = Input.headsetRotation;
-            }
+            () => { }
         );
         leftPalm = new Renderable
         (
-            parent,
+            pivot,
             vec3.ZERO,
             quat.IDENTITY,
             new vec3(0.07f, 0.03f, 0.09f),
             _mesh,
             _shader,
-            () =>
-            {
-                leftPalm.localPosition = Input.leftControllerPosition;
-                leftPalm.localRotation = Input.leftControllerRotation;
-            }
+            () => { }
         );
         rightPalm = new Renderable
         (
-            parent,
+            pivot,
             vec3.ZERO,
             quat.IDENTITY,
             new vec3(0.07f, 0.03f, 0.09f),
             _mesh,
             _shader,
-            () =>
-            {
-                rightPalm.localPosition = Input.rightControllerPosition;
-                rightPalm.localRotation = Input.rightControllerRotation;
-            }
+            () => { }
         );
-        
-        neck = new Renderable
-        (
-            parent,
-            vec3.ZERO,
-            quat.IDENTITY,
-            new vec3(0.07f, 0.08f, 0.07f),
-            // vec3.ZERO,
-            _mesh,
-            _shader,
-            () =>
-            {
-                axisAngle _axis = (axisAngle)head.localRotation;
-                _axis.axis.x   *= 0.5f;
-                _axis.axis.z   *= 0.5f;
-                _axis.axis      = vec3.Normalize(_axis.axis);
-                quat _rot       = (quat)_axis;
-                
-                neck.localPosition = head.localPosition + head.localRotation * vec3.DOWN * 0.13f;
-                neck.localRotation = _rot;
-            }
-        );
-        chest = new Renderable
-        (
-            parent,
-            vec3.ZERO,
-            quat.IDENTITY,
-            new vec3(0.36f, 0.30f, 0.20f),
-            _mesh,
-            _shader,
-            () =>
-            {
-                chest.localPosition = neck.localPosition + vec3.DOWN * 0.17f;
-                chest.localRotation = (quat)new vec3(0f, ((vec3)head.rotation).y, 0f);
-            }
-        );
+        // neck = new Renderable
+        // (
+        //     pivot,
+        //     vec3.ZERO,
+        //     quat.IDENTITY,
+        //     // new vec3(0.07f, 0.08f, 0.07f),
+        //     vec3.ZERO,
+        //     _mesh,
+        //     _shader,
+        //     () => { }
+        // );
+        // chest = new Renderable
+        // (
+        //     pivot,
+        //     vec3.ZERO,
+        //     quat.IDENTITY,
+        //     new vec3(0.36f, 0.30f, 0.20f),
+        //     _mesh,
+        //     _shader,
+        //     () => { }
+        // );
     }
     
-    
-    private static void OnUpdate()
+    private static void OnBeginUpdate()
     {
-        parent.position = new vec3(-Input.headsetPosition.x - 1.5f, 0f, -Input.headsetPosition.z + 0.5f);
+        vec3 _headsetPosDelta           = Input.headsetPosition         -              previousHeadsetPosition;
+        quat _headsetRotDelta           = Input.headsetRotation         + quat.Inverse(previousHeadsetRotation);
+        vec3 _leftControllerPosDelta    = Input.leftControllerPosition  -              previousLeftControllerPosition;
+        quat _leftControllerRotDelta    = Input.leftControllerRotation  + quat.Inverse(previousLeftControllerRotation);
+        vec3 _rightControllerPosDelta   = Input.rightControllerPosition -              previousRightControllerPosition;
+        quat _rightControllerRotDelta   = Input.rightControllerRotation + quat.Inverse(previousRightControllerRotation);
+        
+        previousHeadsetPosition         = Input.headsetPosition;
+        previousHeadsetRotation         = Input.headsetRotation;
+        previousLeftControllerPosition  = Input.leftControllerPosition;
+        previousLeftControllerRotation  = Input.leftControllerRotation;
+        previousRightControllerPosition = Input.rightControllerPosition;
+        previousRightControllerRotation = Input.rightControllerRotation;
+
+
+        pivot .localPosition = _headsetPosDelta.x_z + pivot.localPosition;
+        
+        head  .localPosition = _headsetPosDelta._y_ + head.localPosition;
+        head  .localRotation = _headsetRotDelta     + head.localRotation;
+        
+        leftPalm .localPosition  = _leftControllerPosDelta  - _headsetPosDelta.x_z    + leftPalm .localPosition;
+        leftPalm .localRotation  = _leftControllerRotDelta                            + leftPalm .localRotation;
+        rightPalm.localPosition  = _rightControllerPosDelta - _headsetPosDelta.x_z    + rightPalm.localPosition;
+        rightPalm.localRotation  = _rightControllerRotDelta                           + rightPalm.localRotation;
+        
+        
+        float _speed   = 2f * Time.delta;
+        vec3 _movement = new vec3(Input.rightControllerJoystick.x *  _speed, 0f, Input.rightControllerJoystick.y * -_speed);
+        pivot.localPosition += quat.Rotate((quat)((vec3)head.rotation)._y_, _movement);
+        
+        Camera.position = head.position;
+        Camera.rotation = head.rotation;
     }
 }

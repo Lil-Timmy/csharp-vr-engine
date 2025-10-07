@@ -85,6 +85,16 @@ public struct uvec4
     public readonly uvec4 wyzx { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new uvec4(w, y, z, x); }
     public readonly uvec4 wzxy { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new uvec4(w, z, x, y); }
     public readonly uvec4 wzyx { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new uvec4(w, z, y, x); }
+    
+    public readonly uvec4 _yzw { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new uvec4(0, y, z, w); }
+    public readonly uvec4 x_zw { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new uvec4(x, 0, z, w); }
+    public readonly uvec4 xy_w { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new uvec4(x, y, 0, w); }
+    public readonly uvec4 xyz_ { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new uvec4(x, y, z, 0); }
+    
+    public readonly uvec4 x___ { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new uvec4(x, 0, 0, 0); }
+    public readonly uvec4 _y__ { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new uvec4(0, y, 0, 0); }
+    public readonly uvec4 __z_ { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new uvec4(0, 0, z, 0); }
+    public readonly uvec4 ___w { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new uvec4(0, 0, 0, w); }
 
 
 

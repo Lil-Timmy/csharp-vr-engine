@@ -44,8 +44,11 @@ public static class Testing
         
         if (Input.rightControllerSecondary)
         {
-            TestCamera.position = Input.headsetPosition;
-            TestCamera.rotation = Input.headsetRotation;
+            vec3 _rot   = (vec3)Camera.rotation;
+                 _rot.z = 0f;
+            
+            TestCamera.position = Camera.position;
+            TestCamera.euler    = _rot;
         }
     }
 }

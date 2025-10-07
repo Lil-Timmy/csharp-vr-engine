@@ -28,30 +28,6 @@ public struct quat
     #region ADD
     public static quat operator +(quat _leftQuat, quat _rightQuat)
     {
-        return new quat(
-            _leftQuat.x + _rightQuat.x,
-            _leftQuat.y + _rightQuat.y,
-            _leftQuat.z + _rightQuat.z,
-            _leftQuat.w + _rightQuat.w
-        );
-    }
-    #endregion
-    
-    #region SUBTRACT
-    public static quat operator -(quat _leftQuat, quat _rightQuat)
-    {
-        return new quat(
-            _leftQuat.x - _rightQuat.x,
-            _leftQuat.y - _rightQuat.y,
-            _leftQuat.z - _rightQuat.z,
-            _leftQuat.w - _rightQuat.w
-        );
-    }
-    #endregion
-
-    #region MULTIPLY
-    public static quat operator *(quat _leftQuat, quat _rightQuat)
-    {
         float _xL = _leftQuat.x, _yL = _leftQuat.y, _zL = _leftQuat.z, _wL = _leftQuat.w;
         float _xR = _rightQuat.x, _yR = _rightQuat.y, _zR = _rightQuat.z, _wR = _rightQuat.w;
 
@@ -60,79 +36,6 @@ public struct quat
             _wL * _yR - _xL * _zR + _yL * _wR + _zL * _xR,
             _wL * _zR + _xL * _yR - _yL * _xR + _zL * _wR,
             _wL * _wR - _xL * _xR - _yL * _yR - _zL * _zR
-        );
-    }
-    
-    public static quat operator *(quat _leftQuat, float _rightScalar)
-    {
-        return new quat(
-            _leftQuat.x * _rightScalar,
-            _leftQuat.y * _rightScalar,
-            _leftQuat.z * _rightScalar,
-            _leftQuat.w * _rightScalar
-        );
-    }
-    public static quat operator *(float _leftScalar, quat _rightQuat)
-    {
-        return new quat(
-            _leftScalar * _rightQuat.x,
-            _leftScalar * _rightQuat.y,
-            _leftScalar * _rightQuat.z,
-            _leftScalar * _rightQuat.w
-        );
-    }
-
-    public static vec3 operator *(quat _leftQuat, vec3 _rightVec)
-    {
-        float _xQ = _leftQuat.x, _yQ = _leftQuat.y, _zQ = _leftQuat.z, _wQ = _leftQuat.w;
-        float _xV = _rightVec.x, _yV = _rightVec.y, _zV = _rightVec.z;
-
-        float _vecCrossX = 2.0f * (_yQ * _zV - _zQ * _yV);
-        float _vecCrossY = 2.0f * (_zQ * _xV - _xQ * _zV);
-        float _vecCrossZ = 2.0f * (_xQ * _yV - _yQ * _xV);
-
-        float _quatCrossX = _yQ * _vecCrossZ - _zQ * _vecCrossY;
-        float _quatCrossY = _zQ * _vecCrossX - _xQ * _vecCrossZ;
-        float _quatCrossZ = _xQ * _vecCrossY - _yQ * _vecCrossX;
-
-        return new vec3(
-            _xV + _wQ * _vecCrossX + _quatCrossX,
-            _yV + _wQ * _vecCrossY + _quatCrossY,
-            _zV + _wQ * _vecCrossZ + _quatCrossZ
-        );
-    }
-    #endregion
-
-    #region DIVIDE
-    public static quat operator /(quat _leftQuat, quat _rightQuat)
-    {
-        float _xL = _leftQuat.x, _yL = _leftQuat.y, _zL = _leftQuat.z, _wL = _leftQuat.w;
-        float _xR = _rightQuat.x, _yR = _rightQuat.y, _zR = _rightQuat.z, _wR = _rightQuat.w;
-
-        float _inverseSqrLength = 1.0f / (_xR * _xR + _yR * _yR + _zR * _zR + _wR * _wR);
-
-        float _xInv = -_xR * _inverseSqrLength;
-        float _yInv = -_yR * _inverseSqrLength;
-        float _zInv = -_zR * _inverseSqrLength;
-        float _wInv =  _wR * _inverseSqrLength;
-
-        return new quat(
-            _wL * _xInv + _xL * _wInv + _yL * _zInv - _zL * _yInv,
-            _wL * _yInv + _yL * _wInv + _zL * _xInv - _xL * _zInv,
-            _wL * _zInv + _zL * _wInv + _xL * _yInv - _yL * _xInv,
-            _wL * _wInv - _xL * _xInv - _yL * _yInv - _zL * _zInv
-        );
-    }
-    #endregion
-    
-    #region NEGATE
-    public static quat operator -(quat _quat)
-    {
-        return new quat(
-            -_quat.x,
-            -_quat.y,
-            -_quat.z,
-            -_quat.w
         );
     }
     #endregion
@@ -156,6 +59,26 @@ public struct quat
 
 
     #region MATH
+
+    public static vec3 Rotate(quat _rotation, vec3 _vec)
+    {
+        float _xQ = _rotation.x, _yQ = _rotation.y, _zQ = _rotation.z, _wQ = _rotation.w;
+        float _xV = _vec     .x, _yV = _vec     .y, _zV = _vec     .z;
+
+        float _vecCrossX = 2.0f * (_yQ * _zV - _zQ * _yV);
+        float _vecCrossY = 2.0f * (_zQ * _xV - _xQ * _zV);
+        float _vecCrossZ = 2.0f * (_xQ * _yV - _yQ * _xV);
+
+        float _quatCrossX = _yQ * _vecCrossZ - _zQ * _vecCrossY;
+        float _quatCrossY = _zQ * _vecCrossX - _xQ * _vecCrossZ;
+        float _quatCrossZ = _xQ * _vecCrossY - _yQ * _vecCrossX;
+
+        return new vec3(
+            _xV + _wQ * _vecCrossX + _quatCrossX,
+            _yV + _wQ * _vecCrossY + _quatCrossY,
+            _zV + _wQ * _vecCrossZ + _quatCrossZ
+        );
+    }
 
     public static quat Conjugate(quat _quat)
     {
@@ -225,7 +148,18 @@ public struct quat
 
     public static quat Lerp(quat _leftQuat, quat _rightQuat, float _t)
     {
-        return Normalize(_leftQuat * (1f - _t) + _rightQuat * _t);
+        if (Dot(_leftQuat, _rightQuat) < 0f)
+        {
+            _rightQuat = new quat(-_rightQuat.x, -_rightQuat.y, -_rightQuat.z, -_rightQuat.w);
+        }
+        
+        return Normalize(new quat
+        (
+            _leftQuat.x * (1f - _t) + _rightQuat.x * _t,
+            _leftQuat.y * (1f - _t) + _rightQuat.y * _t,
+            _leftQuat.z * (1f - _t) + _rightQuat.z * _t,
+            _leftQuat.w * (1f - _t) + _rightQuat.w * _t
+        ));
     }
     public static quat Slerp(quat _leftQuat, quat _rightQuat, float _t)
     {
@@ -233,7 +167,7 @@ public struct quat
 
         if (_difference < 0f)
         {
-            _rightQuat = -_rightQuat;
+            _rightQuat = new quat(-_rightQuat.x, -_rightQuat.y, -_rightQuat.z, -_rightQuat.w);
             _difference = -_difference;
         }
 
@@ -317,7 +251,6 @@ public struct quat
             _cPitch * _cYaw * _cRoll + _sPitch * _sYaw * _sRoll
         );
     }
-    #region CONVERSION
     public static explicit operator quat                            (axisAngle                        _axisAngle)
     {
         float _s = Maths.Sin(_axisAngle.angle * 0.5f);
@@ -330,7 +263,6 @@ public struct quat
             Maths.Cos(_axisAngle.angle * 0.5f)
         );
     }
-    #endregion
     #endregion
 
 

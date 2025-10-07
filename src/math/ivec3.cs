@@ -37,6 +37,14 @@ public struct ivec3
     public readonly ivec3 yzx { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new ivec3(y, z, x); }
     public readonly ivec3 zxy { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new ivec3(z, x, y); }
     public readonly ivec3 zyx { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new ivec3(z, y, x); }
+    
+    public readonly ivec3 _yz { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new ivec3(0, y, z); }
+    public readonly ivec3 x_z { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new ivec3(x, 0, z); }
+    public readonly ivec3 xy_ { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new ivec3(x, y, 0); }
+    
+    public readonly ivec3 x__ { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new ivec3(x, 0, 0); }
+    public readonly ivec3 _y_ { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new ivec3(0, y, 0); }
+    public readonly ivec3 __z { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new ivec3(0, 0, z); }
 
 
 

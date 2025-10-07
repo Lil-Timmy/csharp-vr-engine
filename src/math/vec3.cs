@@ -37,6 +37,14 @@ public struct vec3
     public readonly vec3 yzx { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new vec3(y, z, x); }
     public readonly vec3 zxy { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new vec3(z, x, y); }
     public readonly vec3 zyx { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new vec3(z, y, x); }
+    
+    public readonly vec3 _yz { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new vec3(0, y, z); }
+    public readonly vec3 x_z { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new vec3(x, 0, z); }
+    public readonly vec3 xy_ { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new vec3(x, y, 0); }
+
+    public readonly vec3 x__ { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new vec3(x, 0, 0); }
+    public readonly vec3 _y_ { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new vec3(0, y, 0); }
+    public readonly vec3 __z { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new vec3(0, 0, z); }
 
 
 
@@ -182,6 +190,16 @@ public struct vec3
     
     #region MATH
 
+    public static float Magnitude(vec3 _vec)
+    {
+        return Maths.Sqrt
+        (
+            _vec.x * _vec.x +
+            _vec.y * _vec.y +
+            _vec.z * _vec.z
+        );
+    }
+    
     public static vec3 Normalize(vec3 _vec)
     {
         return 1f / Maths.Sqrt

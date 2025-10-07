@@ -38,7 +38,7 @@ public static unsafe class OpenXR
         
         for (int _i = 0; _i < 2; _i++)
         {
-            uint _framebuffer = glGenFramebuffer();
+            uint _framebuffer  = glGenFramebuffer();
             uint _depthTexture = glGenTexture();
             
             glBindTexture(GL_TEXTURE_2D , _depthTexture);
@@ -60,7 +60,7 @@ public static unsafe class OpenXR
     
     public static bool Begin()
     {
-        session.UpdateEvents(instance, out bool _recentered);
+        session.UpdateEvents(instance);
         if (!session.isActive || !swapchain.Wait(session, space, out views, out long _predictedDisplayTime))
         {
             return false;
@@ -79,17 +79,31 @@ public static unsafe class OpenXR
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffers[2]);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
-        Input.Update(instance, session, space, views, _predictedDisplayTime, _recentered);
-        
-        screenMatrices[0] = mat4.Position(-Input.leftEye .position) * mat4.Rotation(quat.Inverse(Input.leftEye .rotation)) * mat4.Projection(Input.leftEye                , Input.NEAR, Input.FAR);
-        screenMatrices[1] = mat4.Position(-Input.rightEye.position) * mat4.Rotation(quat.Inverse(Input.rightEye.rotation)) * mat4.Projection(Input.rightEye               , Input.NEAR, Input.FAR);
-        screenMatrices[2] = mat4.Position(-TestCamera    .position) * mat4.Rotation(quat.Inverse(TestCamera    .rotation)) * mat4.Projection(Input.FOV, Window.aspectRatio, Input.NEAR, Input.FAR);
+        Input.Update(instance, session, space, views, _predictedDisplayTime);
         
         return true;
     }
     public static void End()
     {
         swapchain.End(session, space);
+        
+        Input.Clear();
+    }
+    
+    private static void OnEndUpdate()
+    {
+        XRView _leftEye  = views[0];
+        XRView _rightEye = views[1];
+        
+        vec3 _leftEyePos  = Camera.position + quat.Rotate(Camera.rotation + quat.Inverse(Input.headsetRotation), _leftEye .position - Input.headsetPosition);
+        quat _leftEyeRot  =                               Camera.rotation + _leftEye .rotation + quat.Inverse(Input.headsetRotation);
+        
+        vec3 _rightEyePos = Camera.position + quat.Rotate(Camera.rotation + quat.Inverse(Input.headsetRotation), _rightEye.position - Input.headsetPosition);
+        quat _rightEyeRot =                               Camera.rotation + _rightEye.rotation + quat.Inverse(Input.headsetRotation);
+        
+        screenMatrices[0] = mat4.Position(-_leftEyePos        ) * mat4.Rotation(quat.Inverse(_leftEyeRot        )) * mat4.Projection(_leftEye                     , Input.NEAR, Input.FAR);
+        screenMatrices[1] = mat4.Position(-_rightEyePos       ) * mat4.Rotation(quat.Inverse(_rightEyeRot       )) * mat4.Projection(_rightEye                    , Input.NEAR, Input.FAR);
+        screenMatrices[2] = mat4.Position(-TestCamera.position) * mat4.Rotation(quat.Inverse(TestCamera.rotation)) * mat4.Projection(Input.FOV, Window.aspectRatio, Input.NEAR, Input.FAR);
     }
     
     public static void Draw(Shader _shader, Action _callback)

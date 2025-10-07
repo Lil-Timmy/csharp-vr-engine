@@ -11,7 +11,7 @@ public static class Program
     
     
     private static readonly List<string> initCallbacks  = ["OnBegin"       , "OnStart"                                                            ];
-    private static readonly List<string> frameCallbacks = ["OnBeginUpdate", "OnEarlyUpdate", "OnUpdate", "OnLateUpdate", "OnRender", "OnEndUpdate"];
+    private static readonly List<string> frameCallbacks = ["OnBeginUpdate", "OnEarlyUpdate", "OnUpdate", "OnLateUpdate", "OnEndUpdate", "OnRender"];
     private static readonly List<string> exitCallbacks  = ["OnQuit"       , "OnEnd"                                                               ];
     
     

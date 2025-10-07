@@ -21,6 +21,9 @@ public struct uvec2
 
     public readonly uvec2 xy { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new uvec2(x, y); }
     public readonly uvec2 yx { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new uvec2(y, x); }
+    
+    public readonly uvec2 _y { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new uvec2(0, y); }
+    public readonly uvec2 x_ { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new uvec2(x, 0); }
 
 
 

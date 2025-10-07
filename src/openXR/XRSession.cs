@@ -82,35 +82,19 @@ public unsafe class XRSession : Disposable
     }
 
 
-    public void UpdateEvents(XRInstance _instance, out bool _recentered)
+    public void UpdateEvents(XRInstance _instance)
     {
-        _recentered = false;
-        
         fixed (XrEventDataBuffer* _eventDataBufferPtr = &eventDataBuffer)
         {
             while(TimmyXR.xrPollEvent(_instance.instance, _eventDataBufferPtr) == XrResult.XR_SUCCESS)
             {
-                switch (eventDataBuffer.type)
+                if (eventDataBuffer.type == XrStructureType.XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED)
                 {
-                    case XrStructureType.XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED:
-                    {
-                        UpdateSessionState(Unsafe.As<XrEventDataBuffer, XrEventDataSessionStateChanged>(ref eventDataBuffer).state);
-                        break;
-                    }
-                    case XrStructureType.XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING:
-                    {
-                        Debug.Error("Lost OpenXR instance, likely fatal bug.");
-                        break;
-                    }
-                    case XrStructureType.XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING:
-                    {
-                        _recentered = true;
-                        break;
-                    }
-                    default:
-                    {
-                        break;
-                    }
+                    UpdateSessionState(Unsafe.As<XrEventDataBuffer, XrEventDataSessionStateChanged>(ref eventDataBuffer).state);
+                }
+                else if (eventDataBuffer.type == XrStructureType.XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING)
+                {
+                    
                 }
                 
                 eventDataBuffer.type = XrStructureType.XR_TYPE_EVENT_DATA_BUFFER;

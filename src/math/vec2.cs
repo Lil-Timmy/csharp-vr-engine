@@ -23,6 +23,9 @@ public struct vec2
 
     public readonly vec2 xy { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new vec2(x, y); }
     public readonly vec2 yx { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new vec2(y, x); }
+    
+    public readonly vec2 _y { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new vec2(0, y); }
+    public readonly vec2 x_ { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new vec2(x, 0); }
 
 
 

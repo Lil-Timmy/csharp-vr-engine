@@ -89,6 +89,16 @@ public struct vec4
     public readonly vec4 wyzx { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new vec4(w, y, z, x); }
     public readonly vec4 wzxy { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new vec4(w, z, x, y); }
     public readonly vec4 wzyx { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new vec4(w, z, y, x); }
+    
+    public readonly vec4 _yzw { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new vec4(0, y, z, w); }
+    public readonly vec4 x_zw { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new vec4(x, 0, z, w); }
+    public readonly vec4 xy_w { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new vec4(x, y, 0, w); }
+    public readonly vec4 xyz_ { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new vec4(x, y, z, 0); }
+    
+    public readonly vec4 x___ { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new vec4(x, 0, 0, 0); }
+    public readonly vec4 _y__ { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new vec4(0, y, 0, 0); }
+    public readonly vec4 __z_ { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new vec4(0, 0, z, 0); }
+    public readonly vec4 ___w { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => new vec4(0, 0, 0, w); }
 
 
 

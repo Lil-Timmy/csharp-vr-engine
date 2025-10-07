@@ -7,12 +7,8 @@ namespace Engine;
 
 public unsafe class XRInputs
 {
-    public XRView  leftEye                 { get; private set; } = new XRView(vec3.ZERO, quat.IDENTITY, 0f, 0f, 0f, 0f);
-    public XRView  rightEye                { get; private set; } = new XRView(vec3.ZERO, quat.IDENTITY, 0f, 0f, 0f, 0f);
-    
     public vec3  headsetPosition           => inputPoses  [Input.HEADPOSE      ].position;
     public quat  headsetRotation           => inputPoses  [Input.HEADPOSE      ].rotation;
-    public float headsetHeight             => previousHeadsetRoomPosition.y;
 
     public bool  rightControllerActive     { get; private set; }
     public bool  leftControllerActive      { get; private set; }
@@ -38,12 +34,6 @@ public unsafe class XRInputs
     
     private vec3 previousHeadsetRoomPosition = vec3.ZERO;
     private quat previousHeadsetRoomRotation = quat.IDENTITY;
-    
-    private vec3 previousLeftEyeRoomPosition = vec3.ZERO;
-    private quat previousLeftEyeRoomRotation = quat.IDENTITY;
-    
-    private vec3 previousRightEyeRoomPosition = vec3.ZERO;
-    private quat previousRightEyeRoomRotation = quat.IDENTITY;
 
 
     private struct Input
@@ -255,29 +245,23 @@ public unsafe class XRInputs
         rightInteractionProfileState = new XrInteractionProfileState()
         {
             type = XrStructureType.XR_TYPE_INTERACTION_PROFILE_STATE,
-            next = null                                 ,
+            next = null                                             ,
         };
         leftInteractionProfileState = new XrInteractionProfileState()
         {
             type = XrStructureType.XR_TYPE_INTERACTION_PROFILE_STATE,
-            next = null                                 ,
+            next = null                                             ,
         };
     }
     
 
-    public void UpdateActions(XRInstance _xrInstance, XRSession _xrSession, XRSpace _xrSpace, XRView[] _views, long _predictedDisplayTime, bool _recentered)
+    public void UpdateActions(XRInstance _xrInstance, XRSession _xrSession, XRSpace _xrSpace, XRView[] _views, long _predictedDisplayTime)
     {
         fixed (XrActiveActionSet* _activeActionSetPtr = &activeActionSet)
-        {
-            actionsSyncInfo.activeActionSets = _activeActionSetPtr;
-        }
-        
         fixed (XrActionsSyncInfo* _actionsSyncInfoPtr = &actionsSyncInfo)
         {
-            if (TimmyXR.xrSyncActions(_xrSession.session, _actionsSyncInfoPtr) != XrResult.XR_SUCCESS)
-            {
-                return;
-            }
+            actionsSyncInfo.activeActionSets = _activeActionSetPtr;
+            if (TimmyXR.xrSyncActions(_xrSession.session, _actionsSyncInfoPtr) != XrResult.XR_SUCCESS) return;
         }
 
         fixed (XrInteractionProfileState* _rightInteractionProfileStatePtr = &rightInteractionProfileState)
@@ -326,71 +310,10 @@ public unsafe class XRInputs
         XRView _leftEye  = _views[0];
         XRView _rightEye = _views[1];
         
-        vec3 _newHeadsetRoomPosition =           (_leftEye.position + _rightEye.position) * 0.5f ;
-        quat _newHeadsetRoomRotation = quat.Slerp(_leftEye.rotation,  _rightEye.rotation,   0.5f);
-        
-        
-        if (_recentered)
-        {
-            previousHeadsetRoomPosition = _newHeadsetRoomPosition;
-            previousHeadsetRoomRotation = _newHeadsetRoomRotation;
-        }
-        
-        vec3 _roomHeadsetPositionChange  = _newHeadsetRoomPosition - previousHeadsetRoomPosition;
-        quat _roomHeadsetRotationChange  = _newHeadsetRoomRotation / previousHeadsetRoomRotation;
-        
-        vec3 _roomLeftEyePositionChange  = _leftEye      .position - previousLeftEyeRoomPosition;
-        quat _roomLeftEyeRotationChange  = _leftEye      .rotation / previousLeftEyeRoomRotation;
-        
-        vec3 _roomRightEyePositionChange = _rightEye     .position - previousRightEyeRoomPosition;
-        quat _roomRightEyeRotationChange = _rightEye     .rotation / previousRightEyeRoomRotation;
-        
-        
-        vec3 _previousHeadsetScenePosition  = inputPoses[Input.HEADPOSE].position;
-        quat _previousHeadsetSceneRotation  = inputPoses[Input.HEADPOSE].rotation;
-        
-        vec3 _previousLeftEyeScenePosition  = leftEye.position;
-        quat _previousLeftEyeSceneRotation  = leftEye.rotation;
-        
-        vec3 _previousRightEyeScenePosition = rightEye.position;
-        quat _previousRightEyeSceneRotation = rightEye.rotation;
-
         inputPoses[Input.HEADPOSE] = new XRPose
         (
-            _previousHeadsetSceneRotation  / previousHeadsetRoomRotation  * _roomHeadsetPositionChange  + _previousHeadsetScenePosition,
-            _roomHeadsetRotationChange                                                                  * _previousHeadsetSceneRotation
+                      (_leftEye.position + _rightEye.position) * 0.5f,
+            quat.Slerp(_leftEye.rotation,  _rightEye.rotation,   0.5f)
         );
-        
-        leftEye = new XRView
-        (
-            _previousLeftEyeSceneRotation  / previousLeftEyeRoomRotation  * _roomLeftEyePositionChange  + _previousLeftEyeScenePosition,
-            _roomLeftEyeRotationChange                                                                  * _previousLeftEyeSceneRotation,
-            
-            _leftEye.angleLeft ,
-            _leftEye.angleRight,
-            _leftEye.angleUp   ,
-            _leftEye.angleDown
-        );
-        
-        rightEye = new XRView
-        (
-            _previousRightEyeSceneRotation / previousRightEyeRoomRotation * _roomRightEyePositionChange + _previousRightEyeScenePosition,
-            _roomRightEyeRotationChange                                                                 * _previousRightEyeSceneRotation,
-            
-            _rightEye.angleLeft ,
-            _rightEye.angleRight,
-            _rightEye.angleUp   ,
-            _rightEye.angleDown
-        );
-        
-        
-        previousHeadsetRoomPosition  = _newHeadsetRoomPosition;
-        previousHeadsetRoomRotation  = _newHeadsetRoomRotation;
-        
-        previousLeftEyeRoomPosition  = _leftEye.position;
-        previousLeftEyeRoomRotation  = _leftEye.rotation;
-        
-        previousRightEyeRoomPosition = _rightEye.position;
-        previousRightEyeRoomRotation = _rightEye.rotation;
     }
 }

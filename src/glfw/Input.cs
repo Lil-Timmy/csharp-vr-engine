@@ -80,12 +80,12 @@ public static class Input
     }
     
     
-    public static void Update(XRInstance _xrInstance, XRSession _xrSession, XRSpace _xrSpace, XRView[] _xrViews, long _nextDisplayTime, bool _recentered)
+    public static void Update(XRInstance _xrInstance, XRSession _xrSession, XRSpace _xrSpace, XRView[] _xrViews, long _nextDisplayTime)
     {
-        xrInputs.UpdateActions(_xrInstance, _xrSession, _xrSpace, _xrViews, _nextDisplayTime, _recentered);
+        xrInputs.UpdateActions(_xrInstance, _xrSession, _xrSpace, _xrViews, _nextDisplayTime);
     }
     
-    private static void OnEndUpdate()
+    public static void Clear()
     {
         down.Clear();
         up  .Clear();
@@ -96,13 +96,9 @@ public static class Input
     public static bool Held(Key _key) => held.Contains(_key);
     public static bool Up  (Key _key) => up  .Contains(_key);
     
-    
-    public static XRView leftEye                   => xrInputs.leftEye;
-    public static XRView rightEye                  => xrInputs.rightEye;
 
     public static vec3   headsetPosition           => xrInputs.headsetPosition;
     public static quat   headsetRotation           => xrInputs.headsetRotation;
-    public static float  headsetHeight             => xrInputs.headsetHeight;
 
     public static bool   rightControllerActive     => xrInputs.rightControllerActive;
     public static bool   leftControllerActive      => xrInputs.leftControllerActive;

@@ -21,9 +21,9 @@ public class Transform : Entity
     }
     public readonly List<Transform> children = new List<Transform>();
     
-    public vec3 position { get { return parent_ == null ? localPosition : parent.position + localPosition; } set { localPosition = value - parent.position; } }
-    public quat rotation { get { return parent_ == null ? localRotation : parent.rotation * localRotation; } set { localRotation = value / parent.rotation; } }
-    public vec3 scale    { get { return parent_ == null ? localScale    : parent.scale    * localScale   ; } set { localScale    = value / parent.scale   ; } }
+    public vec3 position { get { return parent_ == null ? localPosition : parent.position + quat.Rotate(parent.rotation, localPosition); } set { localPosition = value -              parent.position ; } }
+    public quat rotation { get { return parent_ == null ? localRotation : parent.rotation + localRotation;                               } set { localRotation = value + quat.Inverse(parent.rotation); } }
+    public vec3 scale    { get { return parent_ == null ? localScale    : parent.scale    * localScale   ;                               } set { localScale    = value /              parent.scale    ; } }
     
     public vec3 localPosition;
     public quat localRotation;
