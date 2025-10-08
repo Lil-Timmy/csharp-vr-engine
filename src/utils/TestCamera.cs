@@ -7,9 +7,7 @@ namespace Engine;
 public static class TestCamera
 {
     public static vec3 position = vec3.ZERO;
-    public static vec3 euler    = vec3.ZERO;
-    
-    public static quat rotation => (quat)euler;
+    public static quat rotation = quat.IDENTITY;
     
     
     private static ivec2 previousMousePosition;
@@ -25,8 +23,14 @@ public static class TestCamera
         {
             if (Input.Held(Input.Key.ButtonMiddle))
             {
-                euler.x += (Input.mousePosition.y - previousMousePosition.y) * SENSITIVITY;
-                euler.y -= (Input.mousePosition.x - previousMousePosition.x) * SENSITIVITY;
+                vec3 _euler = new vec3
+                (
+                    (Input.mousePosition.y - previousMousePosition.y) *  SENSITIVITY,
+                    (Input.mousePosition.x - previousMousePosition.x) * -SENSITIVITY,
+                    0f
+                );
+                
+                rotation = rotation + (quat)_euler;
             }
             
             previousMousePosition = Input.mousePosition;
@@ -45,5 +49,12 @@ public static class TestCamera
         _direction.y -= Input.Held(Input.Key.LeftShift) ? 1f : 0f;
         
         position += quat.Rotate(rotation, _direction * SPEED * Time.delta);
+        
+        
+        if (Input.rightControllerSecondary)
+        {
+            TestCamera.position = Camera.position;
+            TestCamera.rotation = Camera.rotation;
+        }
     }
 }

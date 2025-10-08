@@ -41,14 +41,5 @@ public static class Testing
         left.position = Input.leftControllerPosition;
         left.rotation = Input.leftControllerRotation;
         left.scale    = new vec3(Input.leftControllerTrigger * 0.2f + 0.01f);
-        
-        if (Input.rightControllerSecondary)
-        {
-            vec3 _rot   = (vec3)Camera.rotation;
-                 _rot.z = 0f;
-            
-            TestCamera.position = Camera.position;
-            TestCamera.euler    = _rot;
-        }
     }
 }
