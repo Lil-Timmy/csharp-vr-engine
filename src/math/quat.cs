@@ -146,6 +146,59 @@ public struct quat
         ;
     }
 
+    public static quat LookRotation(vec3 _forward, vec3 _up)
+    {
+        vec3 _right = vec3.Normalize(vec3.Cross(_up , _forward));
+             _up    =                vec3.Cross(_forward, _right   );
+        
+        
+        (float _m00, float _m01, float _m02) = (_right  .x, _right  .y, _right  .z);
+        (float _m10, float _m11, float _m12) = (_up     .x, _up     .y, _up     .z);
+        (float _m20, float _m21, float _m22) = (_forward.x, _forward.y, _forward.z);
+
+        float _trace = _m00 + _m11 + _m22;
+        quat  _quat;
+
+        if (_trace > 0f)
+        {
+            float _scale = Maths.Sqrt(_trace + 1f) * 2f;
+            
+            _quat.x = (_m21 - _m12) / _scale;
+            _quat.y = (_m02 - _m20) / _scale;
+            _quat.z = (_m10 - _m01) / _scale;
+            _quat.w = 0.25f * _scale;
+        }
+        else if (_m00 > _m11 && _m00 > _m22)
+        {
+            float _scale = Maths.Sqrt(1f + _m00 - _m11 - _m22) * 2f;
+            
+            _quat.x = 0.25f * _scale;
+            _quat.y = (_m01 + _m10) / _scale;
+            _quat.z = (_m02 + _m20) / _scale;
+            _quat.w = (_m21 - _m12) / _scale;
+        }
+        else if (_m11 > _m22)
+        {
+            float _scale = Maths.Sqrt(1f + _m11 - _m00 - _m22) * 2f;
+            
+            _quat.x = (_m01 + _m10) / _scale;
+            _quat.y = 0.25f * _scale;
+            _quat.z = (_m12 + _m21) / _scale;
+            _quat.w = (_m02 - _m20) / _scale;
+        }
+        else
+        {
+            float _scale = Maths.Sqrt(1f + _m22 - _m00 - _m11) * 2f;
+            
+            _quat.x = (_m02 + _m20) / _scale;
+            _quat.y = (_m12 + _m21) / _scale;
+            _quat.z = 0.25f * _scale;
+            _quat.w = (_m10 - _m01) / _scale;
+        }
+        
+        return quat.Normalize(quat.Inverse(_quat));
+    }
+
     public static quat Lerp(quat _leftQuat, quat _rightQuat, float _t)
     {
         if (Dot(_leftQuat, _rightQuat) < 0f)

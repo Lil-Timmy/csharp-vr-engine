@@ -190,6 +190,13 @@ public struct vec3
     
     #region MATH
 
+    public static float SqrMagnitude(vec3 _vec)
+    {
+        return
+            _vec.x * _vec.x +
+            _vec.y * _vec.y +
+            _vec.z * _vec.z;
+    }
     public static float Magnitude(vec3 _vec)
     {
         return Maths.Sqrt
@@ -222,6 +229,54 @@ public struct vec3
             _leftVec.z * _rightVec.x - _leftVec.x * _rightVec.z,
             _leftVec.x * _rightVec.y - _leftVec.y * _rightVec.x
         );
+    }
+    
+    public static float Angle(vec3 _leftDir, vec3 _rightDir)
+    {
+        return Maths.Acos
+        (
+            Maths.Clamp
+            (
+                vec3.Dot
+                (
+                    _leftDir,
+                    _rightDir
+                )
+                /
+                Maths.Sqrt(SqrMagnitude(_leftDir) * SqrMagnitude(_rightDir))
+                ,
+                -1f,
+                 1f
+            )
+        );
+    }
+    
+    public static vec3 Lerp(vec3 _leftVec, vec3 _rightVec, float _t)
+    {
+        return new vec3
+        (
+            _leftVec.x + (_rightVec.x - _leftVec.x) * _t,
+            _leftVec.y + (_rightVec.y - _leftVec.y) * _t,
+            _leftVec.z + (_rightVec.z - _leftVec.z) * _t
+        );
+    }
+    public static vec3 Slerp(vec3 _leftVec, vec3 _rightVec, float _t)
+    {
+        float _diff = Maths.Clamp
+        (
+            vec3.Dot
+            (
+                vec3.Normalize(_leftVec),
+                vec3.Normalize(_rightVec)
+            ), 
+            -1f,
+            1f
+        );
+        float _angle    = Maths.Acos(_diff) * _t;
+        vec3  _relative = vec3.Normalize(_rightVec - _leftVec * _diff);
+        
+        
+        return vec3.Normalize(_leftVec) * Maths.Cos(_angle) + _relative * Maths.Sin(_angle);
     }
     
     #endregion

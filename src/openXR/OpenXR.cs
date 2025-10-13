@@ -19,6 +19,7 @@ public static unsafe class OpenXR
     private static uint[]         framebuffers ;
     private static uint[]         depthTextures;
     private static mat4[]         screenMatrices;
+    private static XRPose[]       screenPoses;
     
     
     public static void Initialize(string appName, string engineName)
@@ -30,9 +31,10 @@ public static unsafe class OpenXR
         space        = new XRSpace       (session);
         swapchain    = new XRSwapchain   (instance, space, session, systemID);
         
-        framebuffers   = new uint[3];
-        depthTextures  = new uint[3];
-        screenMatrices = new mat4[3];
+        framebuffers   = new uint  [3];
+        depthTextures  = new uint  [3];
+        screenMatrices = new mat4  [3];
+        screenPoses    = new XRPose[3];
         
         glEnable(GL_DEPTH_TEST);
         
@@ -100,6 +102,10 @@ public static unsafe class OpenXR
         
         vec3 _rightEyePos = Camera.position + quat.Rotate(Camera.rotation + quat.Inverse(Input.headsetRotation), _rightEye.position - Input.headsetPosition);
         quat _rightEyeRot =                               Camera.rotation + _rightEye.rotation + quat.Inverse(Input.headsetRotation);
+        
+        screenPoses   [0] = new XRPose(_leftEyePos    , _leftEyeRot    );
+        screenPoses   [1] = new XRPose(_rightEyePos   , _rightEyeRot   );
+        screenPoses   [2] = new XRPose(Camera.position, Camera.rotation);
         
         screenMatrices[0] = mat4.Position(-_leftEyePos        ) * mat4.Rotation(quat.Inverse(_leftEyeRot        )) * mat4.Projection(_leftEye                     , Input.NEAR, Input.FAR);
         screenMatrices[1] = mat4.Position(-_rightEyePos       ) * mat4.Rotation(quat.Inverse(_rightEyeRot       )) * mat4.Projection(_rightEye                    , Input.NEAR, Input.FAR);
